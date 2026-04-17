@@ -315,43 +315,26 @@ async function cadastrar() {
   const cidade = document.getElementById('c-cidade').value.trim();
   const email  = document.getElementById('c-email').value.trim();
   const senha  = document.getElementById('c-senha').value;
-
-  if (!nome || !email || !senha) {
-    showMsg('msg-cad','Preencha nome, e-mail e senha.','err');
-    return;
-  }
-
-  if (senha.length < 6) {
-    showMsg('msg-cad','A senha precisa ter pelo menos 6 caracteres.','err');
-    return;
-  }
-
+  if (!nome || !email || !senha) { showMsg('msg-cad','Preencha nome, e-mail e senha.','err'); return; }
+  if (senha.length < 6) { showMsg('msg-cad','A senha precisa ter pelo menos 6 caracteres.','err'); return; }
   setLoading('btn-cad', true);
-
-  const { data, error } = await db.auth.signUp({
-    email,
-    password: senha,
+  const { error } = await db.auth.signUp({
+    email, password: senha,
     options: { data: { nome, papel: 'aluno' } }
   });
-
   if (error) {
     showMsg('msg-cad', 'Erro ao criar conta: ' + error.message, 'err');
     setLoading('btn-cad', false);
     return;
   }
-
-
-  // agora o usuário EXISTE e está logado
+  // salva campos extras no perfil
   const { data: { user } } = await db.auth.getUser();
-
   if (user) {
-    await db.from('perfis')
-      .update({ idade: +idade || null, cidade })
-      .eq('id', user.id);
+    await db.from('perfis').update({ idade: +idade || null, cidade }).eq('id', user.id);
   }
-
-  falar('Conta criada com sucesso!');
-  window.location.href = 'perfil.html';
+  document.getElementById('f-cad').style.display = 'none';
+  document.getElementById('f-sucesso').style.display = 'block';
+  falar('Conta criada com sucesso! Verifique seu e-mail para confirmar.');
 }
 
 // ─── demo ───────────────────────────────────────────────────
