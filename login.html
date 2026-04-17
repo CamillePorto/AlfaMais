@@ -340,17 +340,6 @@ async function cadastrar() {
     return;
   }
 
-  // 🔥 LOGIN AUTOMÁTICO (ESSA LINHA RESOLVE TUDO)
-  const { error: loginError } = await db.auth.signInWithPassword({
-    email,
-    password: senha
-  });
-
-  if (loginError) {
-    showMsg('msg-cad', 'Conta criada, mas erro ao logar: ' + loginError.message, 'err');
-    setLoading('btn-cad', false);
-    return;
-  }
 
   // agora o usuário EXISTE e está logado
   const { data: { user } } = await db.auth.getUser();
