@@ -84,6 +84,13 @@ body{font-family:'Nunito',sans-serif;background:var(--pd);min-height:100vh;displ
 .field input::placeholder{color:#b8afc8}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
 
+.btn-voltar{
+  background:none;border:none;color:var(--mu);font-size:.82rem;font-weight:700;
+  cursor:pointer;padding:0;font-family:'Nunito',sans-serif;margin-bottom:1.25rem;
+  display:inline-flex;align-items:center;gap:.3rem;transition:color .2s;
+}
+.btn-voltar:hover{color:var(--p)}
+
 .btn-sub{
   width:100%;background:var(--p);color:var(--y);font-family:'Nunito',sans-serif;
   font-size:1rem;font-weight:800;border:none;border-radius:30px;padding:14px;
@@ -195,6 +202,9 @@ body{font-family:'Nunito',sans-serif;background:var(--pd);min-height:100vh;displ
           <input type="password" id="l-senha" placeholder="••••••" autocomplete="current-password">
         </div>
         <button class="btn-sub" id="btn-login" onclick="entrar()">Entrar na plataforma →</button>
+        <div class="toggle" style="margin-top:.75rem">
+          <a onclick="mostrarTab('esqueci')">Esqueci minha senha</a>
+        </div>
         <div class="divider"><span>ou</span></div>
         <button class="btn-demo" onclick="entrarDemo()">🎓 Entrar como visitante (demo)</button>
         <div class="toggle">Não tem conta? <a onclick="mostrarTab('cad')">Criar gratuitamente</a></div>
@@ -237,12 +247,36 @@ body{font-family:'Nunito',sans-serif;background:var(--pd);min-height:100vh;displ
         </div>
       </div>
 
-      <!-- SUCESSO -->
+      <!-- SUCESSO CADASTRO -->
       <div class="success-box" id="f-sucesso">
         <div class="suc-icon">🎉</div>
         <div class="suc-title">Conta criada!</div>
-        <div class="suc-sub">Verifique seu e-mail para confirmar e depois entre na plataforma.</div>
+        <div class="suc-sub">Sua conta foi criada com sucesso. Clique abaixo para entrar.</div>
         <button class="btn-sub" onclick="mostrarTab('login')">Ir para login →</button>
+      </div>
+
+      <!-- ESQUECI SENHA -->
+      <div id="f-esqueci" style="display:none">
+        <button class="btn-voltar" onclick="mostrarTab('login')">← Voltar ao login</button>
+        <div class="form-title">Redefinir senha 🔑</div>
+        <div class="form-sub">Digite seu e-mail e enviaremos um link para você criar uma nova senha.</div>
+        <div class="msg" id="msg-esqueci"></div>
+        <div class="field">
+          <label for="e-email">📧 Seu e-mail</label>
+          <input type="email" id="e-email" placeholder="seu@email.com" autocomplete="email">
+        </div>
+        <button class="btn-sub" id="btn-esqueci" onclick="enviarRedefinicao()">Enviar link de redefinição →</button>
+        <div class="audio-hint" onclick="falar('Digite seu e-mail cadastrado e clique em Enviar link de redefinição. Você receberá um e-mail com um link para criar uma nova senha.')">
+          🔊 Ouvir instruções
+        </div>
+      </div>
+
+      <!-- SUCESSO ESQUECI -->
+      <div class="success-box" id="f-sucesso-esqueci">
+        <div class="suc-icon">📧</div>
+        <div class="suc-title">E-mail enviado!</div>
+        <div class="suc-sub">Verifique sua caixa de entrada e clique no link para criar uma nova senha.</div>
+        <button class="btn-sub" onclick="mostrarTab('login')">Voltar ao login →</button>
       </div>
     </div>
   </div>
@@ -269,19 +303,27 @@ function toggleContraste() {
 
 // ─── tabs ───────────────────────────────────────────────────
 function mostrarTab(t) {
-  document.getElementById('f-login').style.display   = t === 'login' ? '' : 'none';
-  document.getElementById('f-cad').style.display     = t === 'cad'   ? '' : 'none';
-  document.getElementById('f-sucesso').style.display = 'none';
+  ['login','cad','sucesso','esqueci','sucesso-esqueci'].forEach(id => {
+    const el = document.getElementById('f-' + id);
+    if (el) el.style.display = 'none';
+  });
+  document.getElementById('f-' + t).style.display = t === 'sucesso' || t === 'sucesso-esqueci' ? 'block' : '';
   document.getElementById('tab-login').classList.toggle('on', t === 'login');
   document.getElementById('tab-cad').classList.toggle('on', t === 'cad');
+  // esconde as tabs quando está em esqueci/sucesso para não confundir
+  document.querySelector('.tabs').style.visibility = (t === 'esqueci' || t === 'sucesso-esqueci') ? 'hidden' : 'visible';
 }
 
 function setLoading(btnId, on) {
   const btn = document.getElementById(btnId);
+  if (!btn) return;
   btn.disabled = on;
-  btn.innerHTML = on
-    ? '<div class="spinner"></div> Aguarde...'
-    : (btnId === 'btn-login' ? 'Entrar na plataforma →' : 'Criar minha conta →');
+  const labels = {
+    'btn-login':   'Entrar na plataforma →',
+    'btn-cad':     'Criar minha conta →',
+    'btn-esqueci': 'Enviar link de redefinição →',
+  };
+  btn.innerHTML = on ? '<div class="spinner"></div> Aguarde...' : (labels[btnId] || '→');
 }
 
 function showMsg(id, texto, tipo) {
@@ -310,46 +352,54 @@ async function entrar() {
 
 // ─── cadastro ───────────────────────────────────────────────
 async function cadastrar() {
-  const nome = document.getElementById('c-nome').value.trim();
-  const idade = document.getElementById('c-idade').value;
+  const nome   = document.getElementById('c-nome').value.trim();
+  const idade  = document.getElementById('c-idade').value;
   const cidade = document.getElementById('c-cidade').value.trim();
-  const email = document.getElementById('c-email').value.trim();
-  const senha = document.getElementById('c-senha').value;
-
-  if (!nome || !email || !senha) {
-    showMsg('msg-cad', 'Preencha o nome, e-mail e senha.');
-    return;
-  }
-  
+  const email  = document.getElementById('c-email').value.trim();
+  const senha  = document.getElementById('c-senha').value;
+  if (!nome || !email || !senha) { showMsg('msg-cad','Preencha nome, e-mail e senha.','err'); return; }
+  if (senha.length < 6) { showMsg('msg-cad','A senha precisa ter pelo menos 6 caracteres.','err'); return; }
   setLoading('btn-cad', true);
-
   const { error } = await db.auth.signUp({
-    email,
-    password: senha,
-    options: { 
-      data: { nome, papel: 'aluno' },
-      emailRedirectTo: window.location.origin // opcional: pode remover se não precisar
-    },
+    email, password: senha,
+    options: { data: { nome, papel: 'aluno' } }
   });
-
   if (error) {
     showMsg('msg-cad', 'Erro ao criar conta: ' + error.message, 'err');
     setLoading('btn-cad', false);
     return;
   }
-
-  // salva campos extras no perfil
+  // sem verificação de e-mail: o usuário já está logado, salva campos extras e redireciona
   const { data: { user } } = await db.auth.getUser();
-
   if (user) {
-    await db.from('perfis').update({ idade: +idade || null, cidade: cidade }).eq('id', user.id);
+    await db.from('perfis').update({ idade: +idade || null, cidade }).eq('id', user.id);
+    falar('Conta criada com sucesso! Bem-vindo ao ALFA Mais.');
+    window.location.href = 'perfil.html';
+  } else {
+    // fallback: mostra tela de sucesso
+    mostrarTab('sucesso');
+    falar('Conta criada com sucesso!');
   }
-
-  setLoading('btn-cad', false);
-  document.getElementById('f-cad').style.display = 'none';
-  document.getElementById('f-success').style.display = 'block';
-  falar('Conta criada com sucesso!');
 }
+
+// ─── esqueci senha ───────────────────────────────────────────
+async function enviarRedefinicao() {
+  const email = document.getElementById('e-email').value.trim();
+  if (!email) { showMsg('msg-esqueci', 'Por favor, escreva seu e-mail.', 'err'); return; }
+  setLoading('btn-esqueci', true);
+  const { error } = await db.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/redefinir-senha.html',
+  });
+  if (error) {
+    showMsg('msg-esqueci', 'Não foi possível enviar o e-mail. Verifique o endereço e tente novamente.', 'err');
+    falar('Não foi possível enviar. Verifique o e-mail digitado.');
+    setLoading('btn-esqueci', false);
+    return;
+  }
+  mostrarTab('sucesso-esqueci');
+  falar('E-mail enviado! Verifique sua caixa de entrada e clique no link para criar uma nova senha.');
+}
+
 // ─── demo ───────────────────────────────────────────────────
 function entrarDemo() {
   sessionStorage.setItem('alfa_demo', '1');
@@ -358,8 +408,10 @@ function entrarDemo() {
 }
 
 function falarInstrucoes() {
-  const t = document.getElementById('tab-login').classList.contains('on');
-  if (t) falar('Para entrar, escreva seu e-mail e sua senha. Depois clique em Entrar na plataforma.');
+  const loginOn = document.getElementById('tab-login').classList.contains('on');
+  const esqueciOn = document.getElementById('f-esqueci').style.display !== 'none';
+  if (esqueciOn) falar('Digite seu e-mail cadastrado e clique em Enviar link de redefinição.');
+  else if (loginOn) falar('Para entrar, escreva seu e-mail e sua senha. Depois clique em Entrar na plataforma.');
   else falar('Para criar sua conta, preencha seu nome, idade, cidade, e-mail e uma senha. Depois clique em Criar minha conta.');
 }
 
