@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALFA+ — Nova senha</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --p:#6B2FA0;--pd:#3a1870;--pl:#f0e8ff;
+  --y:#FFD600;--tx:#1a1228;--mu:#7a6e8a;
+  --sf:#f7f3ff;--bd:rgba(107,47,160,.18);
+  --green:#22c55e;--r:14px;--fs:18px;
+}
+html{font-size:var(--fs)}
+body{font-family:'Nunito',sans-serif;background:var(--pd);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+
+/* ZOOM */
+.zoom-bar{position:fixed;top:0;left:0;right:0;background:#1a0e35;display:flex;align-items:center;justify-content:flex-end;gap:.5rem;padding:.35rem 1.25rem;z-index:200}
+.zoom-bar span{color:#888;font-size:.68rem}
+.z-btn{background:transparent;border:1px solid #444;color:#bbb;font-size:.72rem;padding:2px 10px;border-radius:20px;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif}
+.z-btn:hover{border-color:var(--y);color:var(--y)}
+.z-btn.active{background:var(--p);border-color:var(--p);color:var(--y)}
+
+/* CARD */
+.card{
+  background:#fff;border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:420px;
+  margin-top:3rem;
+  box-shadow:0 16px 48px rgba(0,0,0,.3);
+}
+.card-logo{font-family:'Sora',sans-serif;font-size:2rem;color:var(--p);text-align:center;margin-bottom:1.5rem}
+.card-icon{font-size:2.8rem;text-align:center;margin-bottom:.75rem}
+.card-title{font-family:'Sora',sans-serif;font-size:1.4rem;color:var(--pd);text-align:center;margin-bottom:.35rem}
+.card-sub{font-size:.85rem;color:var(--mu);text-align:center;margin-bottom:1.75rem;line-height:1.5}
+
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-size:.85rem;font-weight:700;color:var(--pd);margin-bottom:.35rem}
+.field-wrap{position:relative}
+.field input{
+  width:100%;padding:13px 44px 13px 15px;font-size:.95rem;font-family:'Nunito',sans-serif;
+  border:1.5px solid var(--bd);border-radius:var(--r);background:var(--sf);color:var(--tx);
+  transition:border-color .2s,box-shadow .2s;outline:none;
+}
+.field input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(107,47,160,.12)}
+.field input::placeholder{color:#b8afc8}
+.toggle-pw{
+  position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;font-size:1rem;color:var(--mu);padding:0;
+}
+.toggle-pw:hover{color:var(--p)}
+
+/* força */
+.strength-wrap{margin-top:.4rem;display:flex;gap:.3rem;align-items:center}
+.strength-bar{flex:1;height:5px;border-radius:3px;background:var(--bd);overflow:hidden}
+.strength-fill{height:100%;border-radius:3px;transition:width .3s,background .3s}
+.strength-label{font-size:.72rem;font-weight:700;min-width:50px;text-align:right}
+
+.btn-sub{
+  width:100%;background:var(--p);color:var(--y);font-family:'Nunito',sans-serif;
+  font-size:1rem;font-weight:800;border:none;border-radius:30px;padding:14px;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;
+}
+.btn-sub:hover{background:#5a258f;transform:translateY(-2px);box-shadow:0 6px 18px rgba(107,47,160,.3)}
+.btn-sub:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-sub .spinner{width:16px;height:16px;border:2px solid rgba(255,214,0,.3);border-top-color:var(--y);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.msg{padding:.7rem 1rem;border-radius:10px;font-size:.82rem;font-weight:600;margin-bottom:1rem;display:none}
+.msg.err{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;display:block}
+.msg.ok{background:#f0fdf4;color:#16a34a;border:1px solid #86efac;display:block}
+
+/* tela de erro (link inválido) */
+.error-state{text-align:center}
+.error-state .e-icon{font-size:3rem;margin-bottom:.75rem}
+.error-state p{color:var(--mu);font-size:.88rem;line-height:1.5;margin-bottom:1.5rem}
+
+/* tela de sucesso */
+.success-state{display:none;text-align:center}
+.success-state .s-icon{font-size:3rem;margin-bottom:.75rem}
+.success-state p{color:var(--mu);font-size:.88rem;margin-bottom:1.5rem}
+
+/* loading inicial */
+.checking{text-align:center;padding:1rem 0}
+.checking p{color:var(--mu);font-size:.88rem;margin-top:.75rem}
+.spin-lg{width:36px;height:36px;border:4px solid var(--pl);border-top-color:var(--p);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
+
+.audio-hint{display:flex;align-items:center;gap:.5rem;margin-top:1.1rem;background:#fff8e0;border:1px solid #ffe180;border-radius:10px;padding:.6rem 1rem;font-size:.78rem;color:#7a6000;cursor:pointer}
+.audio-hint:hover{background:#fff3c0}
+</style>
+</head>
+<body>
+
+<div class="zoom-bar">
+  <span>Zoom:</span>
+  <button class="z-btn" data-z="16" onclick="setZoom(16)">A</button>
+  <button class="z-btn active" data-z="18" onclick="setZoom(18)">A+</button>
+  <button class="z-btn" data-z="21" onclick="setZoom(21)">A++</button>
+  <button class="z-btn" data-z="24" onclick="setZoom(24)">A+++</button>
+  <button class="z-btn" onclick="falar(instrucaoAtual())">🔊 Ouvir</button>
+</div>
+
+<div class="card">
+  <div class="card-logo">ALFA+</div>
+
+  <!-- VERIFICANDO LINK -->
+  <div id="s-checking" class="checking">
+    <div class="spin-lg"></div>
+    <p>Verificando seu link...</p>
+  </div>
+
+  <!-- LINK INVÁLIDO / EXPIRADO -->
+  <div id="s-erro" style="display:none" class="error-state">
+    <div class="e-icon">⚠️</div>
+    <div class="card-title">Link inválido ou expirado</div>
+    <p>Este link de redefinição não é mais válido. Links expiram após 1 hora por segurança.</p>
+    <button class="btn-sub" onclick="window.location.href='login.html'">Solicitar novo link →</button>
+  </div>
+
+  <!-- FORMULÁRIO NOVA SENHA -->
+  <div id="s-form" style="display:none">
+    <div class="card-icon">🔑</div>
+    <div class="card-title">Criar nova senha</div>
+    <div class="card-sub">Escolha uma senha nova e segura para a sua conta.</div>
+    <div class="msg" id="msg-form"></div>
+    <div class="field">
+      <label for="nova-senha">🔑 Nova senha</label>
+      <div class="field-wrap">
+        <input type="password" id="nova-senha" placeholder="Mínimo 6 caracteres" oninput="avaliarForca(this.value)" autocomplete="new-password">
+        <button type="button" class="toggle-pw" onclick="toggleVer('nova-senha', this)">👁</button>
+      </div>
+      <div class="strength-wrap">
+        <div class="strength-bar"><div class="strength-fill" id="strength-fill" style="width:0%"></div></div>
+        <span class="strength-label" id="strength-label" style="color:var(--mu)">—</span>
+      </div>
+    </div>
+    <div class="field">
+      <label for="conf-senha">🔑 Confirmar nova senha</label>
+      <div class="field-wrap">
+        <input type="password" id="conf-senha" placeholder="Repita a senha" autocomplete="new-password">
+        <button type="button" class="toggle-pw" onclick="toggleVer('conf-senha', this)">👁</button>
+      </div>
+    </div>
+    <button class="btn-sub" id="btn-salvar" onclick="salvarNovaSenha()">Salvar nova senha →</button>
+    <div class="audio-hint" onclick="falar('Digite sua nova senha duas vezes e clique em Salvar nova senha.')">
+      🔊 Ouvir instruções
+    </div>
+  </div>
+
+  <!-- SUCESSO -->
+  <div id="s-sucesso" class="success-state">
+    <div class="s-icon">✅</div>
+    <div class="card-title">Senha atualizada!</div>
+    <p>Sua senha foi redefinida com sucesso. Agora é só entrar na plataforma.</p>
+    <button class="btn-sub" onclick="window.location.href='login.html'">Ir para o login →</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase.js"></script>
+<script>
+// ─── zoom ────────────────────────────────────────────────────
+function setZoom(n) {
+  document.documentElement.style.setProperty('--fs', n + 'px');
+  document.querySelectorAll('.z-btn[data-z]').forEach(b => b.classList.toggle('active', +b.dataset.z === n));
+  localStorage.setItem('alfa_zoom', n);
+}
+(function(){ const z = localStorage.getItem('alfa_zoom'); if(z) setZoom(+z); })();
+
+// ─── mostrar tela ─────────────────────────────────────────────
+function mostrar(id) {
+  ['s-checking','s-erro','s-form','s-sucesso'].forEach(s => {
+    document.getElementById(s).style.display = s === id ? (id === 's-sucesso' ? 'block' : '') : 'none';
+  });
+}
+
+// ─── verifica sessão vinda do link ───────────────────────────
+// O Supabase coloca os tokens no fragmento da URL (#access_token=...&type=recovery)
+(async () => {
+  // Supabase JS v2 processa automaticamente o hash e emite evento
+  // Aguardamos o evento PASSWORD_RECOVERY
+  const { data: { session } } = await db.auth.getSession();
+
+  // se já tem sessão ativa de recovery, mostra form
+  if (session) {
+    mostrar('s-form');
+    falar('Digite sua nova senha e confirme. Depois clique em Salvar nova senha.');
+    return;
+  }
+
+  // escuta o evento de recovery do hash da URL
+  db.auth.onAuthStateChange((event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      mostrar('s-form');
+      falar('Digite sua nova senha e confirme. Depois clique em Salvar nova senha.');
+    }
+  });
+
+  // se não houver nenhum hash de recovery, mostra erro após 3s
+  const hash = window.location.hash;
+  if (!hash || !hash.includes('type=recovery')) {
+    setTimeout(() => {
+      if (document.getElementById('s-checking').style.display !== 'none') {
+        mostrar('s-erro');
+        falar('Este link não é mais válido. Solicite um novo link na tela de login.');
+      }
+    }, 3000);
+  }
+})();
+
+// ─── força da senha ──────────────────────────────────────────
+function avaliarForca(v) {
+  const fill  = document.getElementById('strength-fill');
+  const label = document.getElementById('strength-label');
+  let score = 0;
+  if (v.length >= 6) score++;
+  if (v.length >= 10) score++;
+  if (/[A-Z]/.test(v)) score++;
+  if (/[0-9]/.test(v)) score++;
+  if (/[^A-Za-z0-9]/.test(v)) score++;
+  const map = [
+    { pct:'0%',   cor:'var(--bd)',    txt:'—' },
+    { pct:'20%',  cor:'#ef4444',      txt:'Fraca' },
+    { pct:'50%',  cor:'#f97316',      txt:'Regular' },
+    { pct:'75%',  cor:'#eab308',      txt:'Boa' },
+    { pct:'90%',  cor:'#22c55e',      txt:'Forte' },
+    { pct:'100%', cor:'#16a34a',      txt:'Ótima!' },
+  ];
+  const m = map[Math.min(score, 5)];
+  fill.style.width      = m.pct;
+  fill.style.background = m.cor;
+  label.textContent     = m.txt;
+  label.style.color     = m.cor;
+}
+
+// ─── mostrar/ocultar senha ───────────────────────────────────
+function toggleVer(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  const vendo = inp.type === 'text';
+  inp.type = vendo ? 'password' : 'text';
+  btn.textContent = vendo ? '👁' : '🙈';
+}
+
+// ─── salvar nova senha ───────────────────────────────────────
+async function salvarNovaSenha() {
+  const nova  = document.getElementById('nova-senha').value;
+  const conf  = document.getElementById('conf-senha').value;
+
+  if (nova.length < 6) {
+    showMsg('msg-form', 'A senha precisa ter pelo menos 6 caracteres.', 'err');
+    falar('A senha precisa ter pelo menos 6 caracteres.');
+    return;
+  }
+  if (nova !== conf) {
+    showMsg('msg-form', 'As senhas não coincidem. Verifique e tente novamente.', 'err');
+    falar('As senhas não coincidem. Digite as duas senhas iguais.');
+    return;
+  }
+
+  const btn = document.getElementById('btn-salvar');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Salvando...';
+
+  const { error } = await db.auth.updateUser({ password: nova });
+
+  if (error) {
+    showMsg('msg-form', 'Não foi possível salvar. Tente solicitar um novo link.', 'err');
+    falar('Não foi possível salvar a senha. Tente solicitar um novo link.');
+    btn.disabled = false;
+    btn.innerHTML = 'Salvar nova senha →';
+    return;
+  }
+
+  await db.auth.signOut(); // encerra sessão de recovery
+  mostrar('s-sucesso');
+  falar('Senha atualizada com sucesso! Agora é só entrar na plataforma com a sua nova senha.');
+}
+
+function showMsg(id, texto, tipo) {
+  const el = document.getElementById(id);
+  el.textContent = texto;
+  el.className = 'msg ' + tipo;
+}
+
+function instrucaoAtual() {
+  if (document.getElementById('s-form').style.display !== 'none')
+    return 'Digite sua nova senha duas vezes e clique em Salvar nova senha.';
+  if (document.getElementById('s-sucesso').style.display !== 'none')
+    return 'Senha atualizada com sucesso. Clique em Ir para o login.';
+  return 'Este link de redefinição não é mais válido. Solicite um novo link na tela de login.';
+}
+</script>
+</body>
+</html>
