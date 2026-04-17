@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALFA+ — Jogo de Cartas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --purple: #6B2FA0; --purple-dark: #3a1870;
+    --yellow: #FFD600; --yellow-dark: #b8860b;
+    --text: #1a1228; --muted: #7a6e8a;
+    --surface: #f7f3ff; --border: rgba(107,47,160,.18);
+    --green: #22c55e; --red: #ef4444;
+    --radius: 14px;
+  }
+  html { font-size: 18px; }
+  body { font-family: 'Roboto', sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: var(--purple); display: flex; align-items: center;
+    justify-content: space-between; padding: 0 1.5rem; height: 60px;
+  }
+  .header-back { color: rgba(255,255,255,.8); text-decoration: none; font-size: .88rem; }
+  .header-back:hover { color: var(--yellow); }
+  .header-logo { font-family: 'Sora', sans-serif; font-size: 1.4rem; color: var(--yellow); }
+  .score-display { display: flex; align-items: center; gap: .5rem; }
+  .score-box { background: rgba(255,255,255,.15); color: #fff; font-size: .8rem; font-weight: 700; border-radius: 10px; padding: 4px 12px; }
+  .score-box.good { background: rgba(34,197,94,.3); color: #86efac; }
+  .score-box.bad { background: rgba(239,68,68,.3); color: #fca5a5; }
+
+  /* MAIN */
+  .main { max-width: 640px; margin: 0 auto; padding: 1.5rem 1rem 5rem; }
+
+  /* GAME INFO */
+  .game-info { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: .5rem; }
+  .game-mode-label { font-size: .78rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; }
+  .game-title { font-family: 'Sora', sans-serif; font-size: 1.3rem; color: var(--purple-dark); }
+
+  /* LEVEL SELECT */
+  .level-tabs { display: flex; gap: .5rem; }
+  .level-btn {
+    background: #fff; border: 1.5px solid var(--border); border-radius: 20px;
+    padding: 5px 14px; font-size: .78rem; font-weight: 500; cursor: pointer;
+    color: var(--muted); transition: all .2s;
+  }
+  .level-btn.active { background: var(--purple); color: var(--yellow); border-color: var(--purple); }
+
+  /* QUESTION CARD */
+  .question-card {
+    background: #fff; border-radius: 20px; border: 1.5px solid var(--border);
+    padding: 2rem; text-align: center; margin-bottom: 1.25rem;
+    box-shadow: 0 4px 20px rgba(107,47,160,.07);
+    min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .q-instruction { font-size: .83rem; color: var(--muted); margin-bottom: 1rem; }
+  .q-main { font-family: 'Sora', sans-serif; font-size: 6rem; color: var(--purple); line-height: 1; transition: all .3s; }
+  .q-main.word-mode { font-size: 2.5rem; color: var(--purple-dark); }
+  .q-sub { font-size: .88rem; color: var(--muted); margin-top: .5rem; }
+  .q-audio-hint { margin-top: .75rem; font-size: .78rem; color: var(--purple); cursor: pointer; display: flex; align-items: center; gap: .4rem; justify-content: center; opacity: .8; }
+  .q-audio-hint:hover { opacity: 1; }
+
+  /* OPTIONS GRID */
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: 1.25rem; }
+  .option-card {
+    background: #fff; border: 2px solid var(--border); border-radius: var(--radius);
+    padding: 1rem; cursor: pointer; transition: all .2s; text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: .4rem;
+    min-height: 100px; justify-content: center;
+  }
+  .option-card:hover:not(.disabled) { border-color: var(--purple); background: var(--surface); transform: translateY(-2px); }
+  .option-card.correct { border-color: var(--green); background: #f0fdf4; animation: pulse-green .4s; }
+  .option-card.wrong { border-color: var(--red); background: #fef2f2; animation: shake .3s; }
+  .option-card.disabled { pointer-events: none; opacity: .5; }
+  .option-emoji { font-size: 2.2rem; }
+  .option-word { font-size: .9rem; font-weight: 500; color: var(--purple-dark); }
+  .option-letter { font-family: 'Sora', sans-serif; font-size: 2.2rem; color: var(--purple); }
+
+  @keyframes pulse-green {
+    0%,100%{transform:scale(1)} 50%{transform:scale(1.04)}
+  }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+  }
+
+  /* FEEDBACK */
+  .feedback-bar {
+    background: #fff; border-radius: var(--radius); padding: 1rem 1.25rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    margin-bottom: 1rem; border: 2px solid transparent; min-height: 60px;
+    transition: all .3s;
+  }
+  .feedback-bar.correct { border-color: var(--green); background: #f0fdf4; }
+  .feedback-bar.wrong { border-color: var(--red); background: #fef2f2; }
+  .feedback-bar.hidden { opacity: 0; pointer-events: none; }
+  .feedback-text { font-size: .9rem; font-weight: 500; }
+  .feedback-bar.correct .feedback-text { color: #16a34a; }
+  .feedback-bar.wrong .feedback-text { color: #dc2626; }
+  .btn-next-q {
+    background: var(--purple); color: var(--yellow); border: none;
+    border-radius: 20px; padding: 8px 20px; font-size: .85rem; font-weight: 700;
+    cursor: pointer; font-family: 'Roboto', sans-serif; white-space: nowrap;
+  }
+
+  /* PROGRESS */
+  .game-progress { background: #fff; border-radius: 50px; height: 10px; overflow: hidden; margin-bottom: 1.25rem; border: 1px solid var(--border); }
+  .game-progress-fill { height: 100%; background: linear-gradient(90deg, var(--purple), #9b59d8); border-radius: 50px; transition: width .5s; }
+
+  /* RESULT SCREEN */
+  .result-screen {
+    display: none; background: #fff; border-radius: 24px; border: 1.5px solid var(--border);
+    padding: 2.5rem; text-align: center; box-shadow: 0 8px 32px rgba(107,47,160,.12);
+  }
+  .result-trophy { font-size: 4rem; margin-bottom: .75rem; }
+  .result-title { font-family: 'Sora', sans-serif; font-size: 1.8rem; color: var(--purple-dark); margin-bottom: .5rem; }
+  .result-sub { color: var(--muted); font-size: .9rem; margin-bottom: 1.75rem; }
+  .result-stats { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.75rem; }
+  .result-stat { text-align: center; }
+  .result-stat-n { font-family: 'Sora', sans-serif; font-size: 2.2rem; color: var(--purple); }
+  .result-stat-l { font-size: .75rem; color: var(--muted); font-weight: 500; }
+  .result-btns { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+  .btn-play-again {
+    background: var(--purple); color: var(--yellow); border: none;
+    border-radius: 30px; padding: 14px 30px; font-size: 1rem; font-weight: 700;
+    cursor: pointer; font-family: 'Roboto', sans-serif; transition: all .2s;
+  }
+  .btn-play-again:hover { background: #5a258f; transform: translateY(-2px); }
+  .btn-go-home {
+    background: #fff; color: var(--purple-dark); border: 1.5px solid var(--border);
+    border-radius: 30px; padding: 13px 24px; font-size: .9rem; font-weight: 500;
+    cursor: pointer; font-family: 'Roboto', sans-serif; transition: all .2s; text-decoration: none; display: inline-block;
+  }
+  .btn-go-home:hover { border-color: var(--purple); }
+
+  /* CONFETTI */
+  @keyframes conffall { from{transform:translateY(-10px) rotate(0);opacity:1} to{transform:translateY(100vh) rotate(720deg);opacity:0} }
+  .confetti-piece { position:fixed;width:10px;height:10px;border-radius:2px;animation:conffall 1.2s ease-out forwards;pointer-events:none;z-index:999; }
+
+  /* BOTTOM */
+  .bottom-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff; border-top: 1.5px solid var(--border);
+    padding: 1rem 1.5rem; display: flex; justify-content: center; gap: 1rem;
+    box-shadow: 0 -4px 16px rgba(0,0,0,.06);
+  }
+  .btn-audio-bottom {
+    background: var(--surface); color: var(--purple-dark); border: 1.5px solid var(--border);
+    border-radius: 30px; padding: 12px 22px; font-size: .88rem; font-weight: 500;
+    cursor: pointer; transition: all .2s; font-family: 'Roboto', sans-serif;
+  }
+  .btn-audio-bottom:hover { border-color: var(--purple); }
+
+  @media (max-width: 420px) {
+    .q-main { font-size: 4.5rem; }
+    .options-grid { grid-template-columns: 1fr 1fr; gap: .5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="header-back" href="index.html">← Voltar</a>
+  <div class="header-logo">ALFA+</div>
+  <div class="score-display">
+    <span class="score-box good" id="score-correct">✓ 0</span>
+    <span class="score-box bad" id="score-wrong">✗ 0</span>
+  </div>
+</header>
+
+<main class="main">
+  <div class="game-info">
+    <div>
+      <div class="game-mode-label">🃏 Jogo de Cartas</div>
+      <div class="game-title" id="game-title">Associe a letra à imagem</div>
+    </div>
+    <div class="level-tabs">
+      <button class="level-btn active" onclick="setLevel('easy')">Fácil</button>
+      <button class="level-btn" onclick="setLevel('medium')">Médio</button>
+      <button class="level-btn" onclick="setLevel('hard')">Difícil</button>
+    </div>
+  </div>
+
+  <div class="game-progress"><div class="game-progress-fill" id="game-prog" style="width:0%"></div></div>
+
+  <!-- JOGO -->
+  <div id="game-area">
+    <div class="question-card" id="question-card">
+      <div class="q-instruction" id="q-instruction">Qual palavra começa com esta letra?</div>
+      <div class="q-main" id="q-main">A</div>
+      <div class="q-sub" id="q-sub">Letra A</div>
+      <div class="q-audio-hint" onclick="speakQuestion()">🔊 Ouvir a pergunta</div>
+    </div>
+
+    <div class="options-grid" id="options-grid"></div>
+
+    <div class="feedback-bar hidden" id="feedback-bar">
+      <span class="feedback-text" id="feedback-text">Muito bem!</span>
+      <button class="btn-next-q" onclick="nextQuestion()">Próxima →</button>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="result-screen" id="result-screen">
+    <div class="result-trophy" id="result-trophy">🏆</div>
+    <div class="result-title" id="result-title">Parabéns!</div>
+    <div class="result-sub" id="result-sub">Você completou o jogo!</div>
+    <div class="result-stats">
+      <div class="result-stat"><div class="result-stat-n" id="r-correct">0</div><div class="result-stat-l">Corretas</div></div>
+      <div class="result-stat"><div class="result-stat-n" id="r-wrong">0</div><div class="result-stat-l">Erros</div></div>
+      <div class="result-stat"><div class="result-stat-n" id="r-pct">0%</div><div class="result-stat-l">Aproveitamento</div></div>
+    </div>
+    <div class="result-btns">
+      <button class="btn-play-again" onclick="restartGame()">Jogar novamente</button>
+      <a class="btn-go-home" href="index.html">Ir para início</a>
+    </div>
+  </div>
+</main>
+
+<div class="bottom-bar">
+  <button class="btn-audio-bottom" onclick="speakQuestion()">🔊 Ouvir pergunta</button>
+  <button class="btn-audio-bottom" onclick="speakInstructions()">❓ Como jogar</button>
+</div>
+
+<script>
+const allCards = [
+  {letter:'A',word:'Abelha',emoji:'🐝',level:'easy'},
+  {letter:'B',word:'Bola',emoji:'⚽',level:'easy'},
+  {letter:'C',word:'Casa',emoji:'🏠',level:'easy'},
+  {letter:'D',word:'Dado',emoji:'🎲',level:'easy'},
+  {letter:'E',word:'Estrela',emoji:'⭐',level:'easy'},
+  {letter:'F',word:'Flor',emoji:'🌸',level:'easy'},
+  {letter:'G',word:'Gato',emoji:'🐱',level:'easy'},
+  {letter:'H',word:'Hora',emoji:'⏰',level:'easy'},
+  {letter:'I',word:'Igreja',emoji:'⛪',level:'medium'},
+  {letter:'J',word:'Janela',emoji:'🪟',level:'medium'},
+  {letter:'L',word:'Lua',emoji:'🌙',level:'medium'},
+  {letter:'M',word:'Maçã',emoji:'🍎',level:'medium'},
+  {letter:'N',word:'Nuvem',emoji:'☁️',level:'medium'},
+  {letter:'O',word:'Óculos',emoji:'👓',level:'medium'},
+  {letter:'P',word:'Pato',emoji:'🦆',level:'medium'},
+  {letter:'Q',word:'Queijo',emoji:'🧀',level:'hard'},
+  {letter:'R',word:'Rato',emoji:'🐭',level:'hard'},
+  {letter:'S',word:'Sol',emoji:'☀️',level:'easy'},
+  {letter:'T',word:'Tartaruga',emoji:'🐢',level:'hard'},
+  {letter:'U',word:'Uva',emoji:'🍇',level:'easy'},
+  {letter:'V',word:'Vaca',emoji:'🐄',level:'medium'},
+  {letter:'X',word:'Xícara',emoji:'☕',level:'hard'},
+  {letter:'Z',word:'Zebra',emoji:'🦓',level:'hard'},
+];
+
+const MODES = ['letter-to-image', 'image-to-letter', 'word-to-letter'];
+let level = 'easy';
+let questions = [];
+let current = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let answered = false;
+let currentMode = 'letter-to-image';
+
+function setLevel(l) {
+  level = l;
+  document.querySelectorAll('.level-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['easy','medium','hard'][i] === l);
+  });
+  restartGame();
+}
+
+function buildQuestions() {
+  const pool = level === 'easy'
+    ? allCards.filter(c => c.level === 'easy')
+    : level === 'medium'
+    ? allCards.filter(c => ['easy','medium'].includes(c.level))
+    : allCards;
+
+  const shuffled = [...pool].sort(() => Math.random() - .5).slice(0, 10);
+  return shuffled.map(card => {
+    const mode = MODES[Math.floor(Math.random() * MODES.length)];
+    const wrong = pool.filter(c => c.letter !== card.letter).sort(() => Math.random() - .5).slice(0, 3);
+    const opts = [...wrong, card].sort(() => Math.random() - .5);
+    return { card, mode, opts };
+  });
+}
+
+function restartGame() {
+  questions = buildQuestions();
+  current = 0; correctCount = 0; wrongCount = 0; answered = false;
+  document.getElementById('game-area').style.display = '';
+  document.getElementById('result-screen').style.display = 'none';
+  updateScore();
+  renderQuestion();
+}
+
+function renderQuestion() {
+  if (current >= questions.length) { showResult(); return; }
+  const q = questions[current];
+  const { card, mode, opts } = q;
+  answered = false;
+  currentMode = mode;
+
+  document.getElementById('game-prog').style.width = (current / questions.length * 100) + '%';
+
+  const inst = document.getElementById('q-instruction');
+  const qMain = document.getElementById('q-main');
+  const qSub = document.getElementById('q-sub');
+
+  if (mode === 'letter-to-image') {
+    inst.textContent = 'Qual palavra começa com esta letra?';
+    qMain.className = 'q-main';
+    qMain.textContent = card.letter;
+    qSub.textContent = `Letra ${card.letter}`;
+    document.getElementById('game-title').textContent = 'Associe a letra à palavra';
+  } else if (mode === 'image-to-letter') {
+    inst.textContent = 'Qual letra começa esta palavra?';
+    qMain.className = 'q-main';
+    qMain.textContent = card.emoji;
+    qSub.textContent = card.word;
+    document.getElementById('game-title').textContent = 'Qual letra é essa?';
+  } else {
+    inst.textContent = 'Qual imagem representa esta palavra?';
+    qMain.className = 'q-main word-mode';
+    qMain.textContent = card.word;
+    qSub.textContent = `Começa com a letra ${card.letter}`;
+    document.getElementById('game-title').textContent = 'Encontre a imagem certa';
+  }
+
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  opts.forEach(opt => {
+    const div = document.createElement('div');
+    div.className = 'option-card';
+    if (mode === 'letter-to-image') {
+      div.innerHTML = `<div class="option-emoji">${opt.emoji}</div><div class="option-word">${opt.word}</div>`;
+    } else if (mode === 'image-to-letter') {
+      div.innerHTML = `<div class="option-letter">${opt.letter}</div>`;
+    } else {
+      div.innerHTML = `<div class="option-emoji">${opt.emoji}</div><div class="option-word">${opt.word}</div>`;
+    }
+    div.onclick = () => checkAnswer(div, opt, card, opts);
+    grid.appendChild(div);
+  });
+
+  const fb = document.getElementById('feedback-bar');
+  fb.className = 'feedback-bar hidden';
+
+  setTimeout(() => speakQuestion(), 400);
+}
+
+function checkAnswer(el, chosen, correct, opts) {
+  if (answered) return;
+  answered = true;
+  if (navigator.vibrate) navigator.vibrate(60);
+
+  const isCorrect = chosen.letter === correct.letter;
+  const grid = document.getElementById('options-grid');
+  const items = grid.querySelectorAll('.option-card');
+
+  items.forEach((item, i) => {
+    item.classList.add('disabled');
+    if (opts[i].letter === correct.letter) item.classList.add('correct');
+  });
+
+  if (isCorrect) {
+    el.classList.add('correct');
+    correctCount++;
+    if (navigator.vibrate) navigator.vibrate([40,20,40]);
+    showFeedback(true, `✓ Correto! ${correct.emoji} ${correct.word} começa com ${correct.letter}`);
+    speak(`Correto! Muito bem!`);
+  } else {
+    el.classList.add('wrong');
+    wrongCount++;
+    if (navigator.vibrate) navigator.vibrate([100,30,100]);
+    showFeedback(false, `✗ Era ${correct.emoji} ${correct.word} — letra ${correct.letter}`);
+    speak(`Não foi dessa vez. A resposta era ${correct.word}.`);
+  }
+
+  updateScore();
+}
+
+function showFeedback(correct, text) {
+  const bar = document.getElementById('feedback-bar');
+  bar.className = 'feedback-bar ' + (correct ? 'correct' : 'wrong');
+  document.getElementById('feedback-text').textContent = text;
+}
+
+function nextQuestion() {
+  if (navigator.vibrate) navigator.vibrate(60);
+  current++;
+  renderQuestion();
+}
+
+function updateScore() {
+  document.getElementById('score-correct').textContent = `✓ ${correctCount}`;
+  document.getElementById('score-wrong').textContent = `✗ ${wrongCount}`;
+}
+
+function showResult() {
+  document.getElementById('game-area').style.display = 'none';
+  const pct = Math.round(correctCount / questions.length * 100);
+  document.getElementById('r-correct').textContent = correctCount;
+  document.getElementById('r-wrong').textContent = wrongCount;
+  document.getElementById('r-pct').textContent = pct + '%';
+  document.getElementById('result-title').textContent = pct >= 80 ? 'Parabéns!' : pct >= 50 ? 'Bom trabalho!' : 'Continue praticando!';
+  document.getElementById('result-sub').textContent = pct >= 80 ? 'Você foi muito bem! Continue assim!' : pct >= 50 ? 'Você está progredindo!' : 'Não desista, você está aprendendo!';
+  document.getElementById('result-trophy').textContent = pct >= 80 ? '🏆' : pct >= 50 ? '🌟' : '💪';
+  document.getElementById('game-prog').style.width = '100%';
+  document.getElementById('result-screen').style.display = 'block';
+
+  if (pct >= 80) launchConfetti();
+
+  speak(pct >= 80
+    ? `Parabéns! Você acertou ${correctCount} de ${questions.length} perguntas!`
+    : `Você acertou ${correctCount} de ${questions.length}. Continue praticando!`
+  );
+}
+
+function speakQuestion() {
+  if (!questions[current]) return;
+  const q = questions[current];
+  const { card, mode } = q;
+  if (mode === 'letter-to-image') speak(`Qual palavra começa com a letra ${card.letter}?`);
+  else if (mode === 'image-to-letter') speak(`${card.word}. Qual letra começa esta palavra?`);
+  else speak(`${card.word}. Qual imagem representa esta palavra?`);
+}
+
+function speakInstructions() {
+  speak('No jogo de cartas, você vê uma letra, palavra ou imagem e deve escolher a opção certa entre as quatro cartas. Toque na carta que você acha correta. Boa sorte!');
+}
+
+function speak(text) {
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'pt-BR'; u.rate = 0.85;
+    speechSynthesis.speak(u);
+  }
+}
+
+function launchConfetti() {
+  const colors = ['#6B2FA0','#FFD600','#22c55e','#f43f5e','#3b82f6','#f97316'];
+  for (let i = 0; i < 50; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.cssText = `left:${Math.random()*100}vw;top:${Math.random()*20}vh;background:${colors[i%colors.length]};animation-delay:${Math.random()*0.6}s;border-radius:${Math.random()>0.5?'50%':'2px'};width:${8+Math.random()*8}px;height:${8+Math.random()*8}px;`;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2000);
+  }
+}
+
+document.querySelectorAll('button').forEach(el => {
+  el.addEventListener('click', () => { if (navigator.vibrate) navigator.vibrate(60); });
+});
+
+restartGame();
+</script>
+</body>
+</html>

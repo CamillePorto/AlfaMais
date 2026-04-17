@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALFA+ — Entrar</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --p:#6B2FA0;--pd:#3a1870;--pl:#f0e8ff;
+  --y:#FFD600;--yd:#b8860b;
+  --tx:#1a1228;--mu:#7a6e8a;
+  --sf:#f7f3ff;--bd:rgba(107,47,160,.18);
+  --green:#22c55e;--red:#ef4444;
+  --r:14px;--fs:18px;
+}
+html{font-size:var(--fs);scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--pd);min-height:100vh;display:flex;flex-direction:column}
+
+/* ── ZOOM BAR ── */
+.zoom-bar{
+  background:#1a0e35;display:flex;align-items:center;
+  justify-content:flex-end;gap:.5rem;padding:.35rem 1.25rem;
+  position:sticky;top:0;z-index:200;
+}
+.zoom-bar span{color:#888;font-size:.68rem}
+.z-btn{
+  background:transparent;border:1px solid #444;color:#bbb;
+  font-size:.72rem;padding:2px 10px;border-radius:20px;cursor:pointer;
+  transition:all .2s;font-family:'Nunito',sans-serif;
+}
+.z-btn:hover{border-color:var(--y);color:var(--y)}
+.z-btn.active{background:var(--p);border-color:var(--p);color:var(--y)}
+
+/* ── LAYOUT ── */
+.page{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 34px)}
+
+/* ── PAINEL ESQUERDO ── */
+.left{
+  background:var(--p);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:3rem 2.5rem;text-align:center;
+}
+.brand{font-family:'Sora',sans-serif;font-size:4.5rem;color:var(--y);letter-spacing:2px;line-height:1}
+.brand-sub{color:rgba(255,255,255,.8);font-size:.95rem;max-width:280px;margin:.5rem auto 2.5rem;line-height:1.5}
+.mascot{
+  width:200px;height:200px;border-radius:50%;background:var(--yd);
+  display:flex;align-items:center;justify-content:center;margin-bottom:2rem;
+  animation:float 4s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.benefits{display:flex;flex-direction:column;gap:.65rem;width:100%;max-width:260px}
+.ben{
+  display:flex;align-items:center;gap:.75rem;
+  background:rgba(255,255,255,.1);border-radius:12px;padding:.7rem 1rem;text-align:left;
+}
+.ben-i{font-size:1.3rem;flex-shrink:0}
+.ben-t{color:rgba(255,255,255,.9);font-size:.82rem;line-height:1.3}
+
+/* ── PAINEL DIREITO ── */
+.right{
+  background:#fff;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:2.5rem 2rem;
+}
+.form-box{width:100%;max-width:380px}
+.tabs{display:flex;border:1.5px solid var(--bd);border-radius:30px;overflow:hidden;margin-bottom:2rem}
+.tab{
+  flex:1;border:none;background:transparent;padding:11px;
+  font-size:.88rem;font-weight:700;cursor:pointer;color:var(--mu);
+  transition:all .2s;font-family:'Nunito',sans-serif;
+}
+.tab.on{background:var(--p);color:var(--y)}
+.form-title{font-family:'Sora',sans-serif;font-size:1.45rem;color:var(--pd);margin-bottom:.3rem}
+.form-sub{font-size:.83rem;color:var(--mu);margin-bottom:1.6rem;line-height:1.4}
+
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-size:.85rem;font-weight:700;color:var(--pd);margin-bottom:.35rem}
+.field input{
+  width:100%;padding:13px 15px;font-size:.95rem;font-family:'Nunito',sans-serif;
+  border:1.5px solid var(--bd);border-radius:var(--r);background:var(--sf);color:var(--tx);
+  transition:border-color .2s,box-shadow .2s;outline:none;
+}
+.field input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(107,47,160,.12)}
+.field input::placeholder{color:#b8afc8}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+
+.btn-sub{
+  width:100%;background:var(--p);color:var(--y);font-family:'Nunito',sans-serif;
+  font-size:1rem;font-weight:800;border:none;border-radius:30px;padding:14px;
+  cursor:pointer;transition:all .2s;margin-top:.4rem;display:flex;align-items:center;justify-content:center;gap:.5rem;
+}
+.btn-sub:hover{background:#5a258f;transform:translateY(-2px);box-shadow:0 6px 18px rgba(107,47,160,.3)}
+.btn-sub:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-sub .spinner{width:16px;height:16px;border:2px solid rgba(255,214,0,.3);border-top-color:var(--y);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.divider{display:flex;align-items:center;gap:.8rem;margin:1.25rem 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--bd)}
+.divider span{font-size:.75rem;color:var(--mu)}
+
+.btn-demo{
+  width:100%;background:var(--sf);color:var(--pd);border:1.5px solid var(--bd);
+  border-radius:30px;padding:12px;font-size:.88rem;font-weight:700;cursor:pointer;
+  transition:all .2s;font-family:'Nunito',sans-serif;
+}
+.btn-demo:hover{border-color:var(--p);background:#ede8ff}
+
+.toggle{text-align:center;margin-top:1.1rem;font-size:.8rem;color:var(--mu)}
+.toggle a{color:var(--p);font-weight:700;cursor:pointer;text-decoration:none}
+.toggle a:hover{text-decoration:underline}
+
+.audio-hint{
+  display:flex;align-items:center;gap:.5rem;margin-top:1.25rem;
+  background:#fff8e0;border:1px solid #ffe180;border-radius:10px;
+  padding:.6rem 1rem;font-size:.78rem;color:#7a6000;cursor:pointer;
+}
+.audio-hint:hover{background:#fff3c0}
+
+.msg{
+  padding:.7rem 1rem;border-radius:10px;font-size:.82rem;font-weight:600;
+  margin-bottom:1rem;display:none;
+}
+.msg.err{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;display:block}
+.msg.ok{background:#f0fdf4;color:#16a34a;border:1px solid #86efac;display:block}
+
+/* SUCCESS */
+.success-box{display:none;text-align:center;padding:2rem 0}
+.suc-icon{font-size:3.5rem;margin-bottom:.75rem}
+.suc-title{font-family:'Sora',sans-serif;font-size:1.35rem;color:var(--pd);margin-bottom:.4rem}
+.suc-sub{color:var(--mu);font-size:.85rem;margin-bottom:1.5rem}
+
+@media(max-width:680px){
+  .page{grid-template-columns:1fr}
+  .left{display:none}
+  .right{padding:4.5rem 1.25rem 2rem;justify-content:flex-start;min-height:calc(100vh - 34px)}
+}
+</style>
+</head>
+<body>
+
+<!-- ZOOM BAR -->
+<div class="zoom-bar">
+  <span>Zoom:</span>
+  <button class="z-btn" data-z="16" onclick="setZoom(16)">A</button>
+  <button class="z-btn active" data-z="18" onclick="setZoom(18)">A+</button>
+  <button class="z-btn" data-z="21" onclick="setZoom(21)">A++</button>
+  <button class="z-btn" data-z="24" onclick="setZoom(24)">A+++</button>
+  <button class="z-btn" onclick="toggleContraste()" id="btn-contraste">🌗 Contraste</button>
+  <button class="z-btn" onclick="falarInstrucoes()">🔊 Ouvir</button>
+</div>
+
+<div class="page">
+  <!-- ESQUERDO -->
+  <div class="left">
+    <div class="brand">ALFA+</div>
+    <div class="brand-sub">Plataforma de alfabetização para adultos e idosos</div>
+    <div class="mascot">
+      <svg viewBox="0 0 180 180" width="155" height="155" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="90" cy="50" r="28" fill="#ddd5a0" stroke="#a89050" stroke-width="1.5"/>
+        <rect x="56" y="80" width="68" height="52" rx="9" fill="#6899d4"/>
+        <rect x="63" y="95" width="54" height="32" rx="5" fill="#FFD600"/>
+        <circle cx="79" cy="44" r="4" fill="#2a1060"/>
+        <circle cx="101" cy="44" r="4" fill="#2a1060"/>
+        <path d="M79 60 Q90 70 101 60" stroke="#2a1060" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <text x="90" y="118" text-anchor="middle" font-size="17" fill="#6B2FA0">♥</text>
+      </svg>
+    </div>
+    <div class="benefits">
+      <div class="ben"><div class="ben-i">🎙️</div><div class="ben-t">Áudio em toda tela</div></div>
+      <div class="ben"><div class="ben-i">🃏</div><div class="ben-t">Aprenda com jogos e cartas</div></div>
+      <div class="ben"><div class="ben-i">📈</div><div class="ben-t">Progresso salvo na nuvem</div></div>
+      <div class="ben"><div class="ben-i">🔍</div><div class="ben-t">Zoom ajustável para melhor leitura</div></div>
+    </div>
+  </div>
+
+  <!-- DIREITO -->
+  <div class="right">
+    <div class="form-box">
+      <div class="tabs">
+        <button class="tab on" id="tab-login" onclick="mostrarTab('login')">Entrar</button>
+        <button class="tab" id="tab-cad" onclick="mostrarTab('cad')">Criar conta</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="f-login">
+        <div class="form-title">Bem-vindo de volta! 👋</div>
+        <div class="form-sub">Entre com seu e-mail e senha para continuar aprendendo.</div>
+        <div class="msg" id="msg-login"></div>
+        <div class="field">
+          <label for="l-email">📧 E-mail</label>
+          <input type="email" id="l-email" placeholder="seu@email.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="l-senha">🔑 Senha</label>
+          <input type="password" id="l-senha" placeholder="••••••" autocomplete="current-password">
+        </div>
+        <button class="btn-sub" id="btn-login" onclick="entrar()">Entrar na plataforma →</button>
+        <div class="divider"><span>ou</span></div>
+        <button class="btn-demo" onclick="entrarDemo()">🎓 Entrar como visitante (demo)</button>
+        <div class="toggle">Não tem conta? <a onclick="mostrarTab('cad')">Criar gratuitamente</a></div>
+        <div class="audio-hint" onclick="falar('Para entrar, escreva seu e-mail e sua senha. Depois clique em Entrar na plataforma.')">
+          🔊 Ouvir instruções desta tela
+        </div>
+      </div>
+
+      <!-- CADASTRO -->
+      <div id="f-cad" style="display:none">
+        <div class="form-title">Vamos começar! 🌟</div>
+        <div class="form-sub">Crie sua conta gratuita em menos de 1 minuto.</div>
+        <div class="msg" id="msg-cad"></div>
+        <div class="field">
+          <label for="c-nome">👤 Seu nome</label>
+          <input type="text" id="c-nome" placeholder="Ex: Maria da Silva">
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="c-idade">🎂 Idade</label>
+            <input type="number" id="c-idade" placeholder="Ex: 65" min="18" max="110">
+          </div>
+          <div class="field">
+            <label for="c-cidade">📍 Cidade</label>
+            <input type="text" id="c-cidade" placeholder="Ex: Camaçari">
+          </div>
+        </div>
+        <div class="field">
+          <label for="c-email">📧 E-mail</label>
+          <input type="email" id="c-email" placeholder="seu@email.com">
+        </div>
+        <div class="field">
+          <label for="c-senha">🔑 Criar senha</label>
+          <input type="password" id="c-senha" placeholder="Mínimo 6 caracteres">
+        </div>
+        <button class="btn-sub" id="btn-cad" onclick="cadastrar()">Criar minha conta →</button>
+        <div class="toggle">Já tem conta? <a onclick="mostrarTab('login')">Entrar aqui</a></div>
+        <div class="audio-hint" onclick="falar('Para criar sua conta, preencha seu nome, idade, cidade, e-mail e uma senha. Depois clique em Criar minha conta.')">
+          🔊 Ouvir instruções desta tela
+        </div>
+      </div>
+
+      <!-- SUCESSO -->
+      <div class="success-box" id="f-sucesso">
+        <div class="suc-icon">🎉</div>
+        <div class="suc-title">Conta criada!</div>
+        <div class="suc-sub">Verifique seu e-mail para confirmar e depois entre na plataforma.</div>
+        <button class="btn-sub" onclick="mostrarTab('login')">Ir para login →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase.js"></script>
+<script>
+// ─── zoom ───────────────────────────────────────────────────
+function setZoom(n) {
+  document.documentElement.style.setProperty('--fs', n + 'px');
+  document.querySelectorAll('.z-btn[data-z]').forEach(b => b.classList.toggle('active', +b.dataset.z === n));
+  localStorage.setItem('alfa_zoom', n);
+}
+(function(){ const z = localStorage.getItem('alfa_zoom'); if(z) setZoom(+z); })();
+
+let hiC = false;
+function toggleContraste() {
+  hiC = !hiC;
+  document.body.style.filter = hiC ? 'contrast(1.35)' : '';
+  document.getElementById('btn-contraste').classList.toggle('active', hiC);
+}
+
+// ─── tabs ───────────────────────────────────────────────────
+function mostrarTab(t) {
+  document.getElementById('f-login').style.display   = t === 'login' ? '' : 'none';
+  document.getElementById('f-cad').style.display     = t === 'cad'   ? '' : 'none';
+  document.getElementById('f-sucesso').style.display = 'none';
+  document.getElementById('tab-login').classList.toggle('on', t === 'login');
+  document.getElementById('tab-cad').classList.toggle('on', t === 'cad');
+}
+
+function setLoading(btnId, on) {
+  const btn = document.getElementById(btnId);
+  btn.disabled = on;
+  btn.innerHTML = on
+    ? '<div class="spinner"></div> Aguarde...'
+    : (btnId === 'btn-login' ? 'Entrar na plataforma →' : 'Criar minha conta →');
+}
+
+function showMsg(id, texto, tipo) {
+  const el = document.getElementById(id);
+  el.textContent = texto;
+  el.className = 'msg ' + tipo;
+}
+
+// ─── login ──────────────────────────────────────────────────
+async function entrar() {
+  const email = document.getElementById('l-email').value.trim();
+  const senha = document.getElementById('l-senha').value;
+  if (!email || !senha) { showMsg('msg-login','Preencha e-mail e senha.','err'); return; }
+  setLoading('btn-login', true);
+  const { data, error } = await db.auth.signInWithPassword({ email, password: senha });
+  if (error) {
+    showMsg('msg-login', 'E-mail ou senha incorretos. Tente novamente.', 'err');
+    falar('E-mail ou senha incorretos. Tente de novo.');
+    setLoading('btn-login', false);
+    return;
+  }
+  // verifica papel para redirecionar
+  const perfil = await getPerfil(data.user.id);
+  window.location.href = perfil?.papel === 'instrutor' ? 'instrutor.html' : 'perfil.html';
+}
+
+// ─── cadastro ───────────────────────────────────────────────
+async function cadastrar() {
+  const nome   = document.getElementById('c-nome').value.trim();
+  const idade  = document.getElementById('c-idade').value;
+  const cidade = document.getElementById('c-cidade').value.trim();
+  const email  = document.getElementById('c-email').value.trim();
+  const senha  = document.getElementById('c-senha').value;
+  if (!nome || !email || !senha) { showMsg('msg-cad','Preencha nome, e-mail e senha.','err'); return; }
+  if (senha.length < 6) { showMsg('msg-cad','A senha precisa ter pelo menos 6 caracteres.','err'); return; }
+  setLoading('btn-cad', true);
+  const { error } = await db.auth.signUp({
+    email, password: senha,
+    options: { data: { nome, papel: 'aluno' } }
+  });
+  if (error) {
+    showMsg('msg-cad', 'Erro ao criar conta: ' + error.message, 'err');
+    setLoading('btn-cad', false);
+    return;
+  }
+  // salva campos extras no perfil
+  const { data: { user } } = await db.auth.getUser();
+  if (user) {
+    await db.from('perfis').update({ idade: +idade || null, cidade }).eq('id', user.id);
+  }
+  document.getElementById('f-cad').style.display = 'none';
+  document.getElementById('f-sucesso').style.display = 'block';
+  falar('Conta criada com sucesso! Verifique seu e-mail para confirmar.');
+}
+
+// ─── demo ───────────────────────────────────────────────────
+function entrarDemo() {
+  sessionStorage.setItem('alfa_demo', '1');
+  sessionStorage.setItem('alfa_nome', 'Visitante');
+  window.location.href = 'dashboard.html';
+}
+
+function falarInstrucoes() {
+  const t = document.getElementById('tab-login').classList.contains('on');
+  if (t) falar('Para entrar, escreva seu e-mail e sua senha. Depois clique em Entrar na plataforma.');
+  else falar('Para criar sua conta, preencha seu nome, idade, cidade, e-mail e uma senha. Depois clique em Criar minha conta.');
+}
+
+// Enter nos inputs
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const tab = document.getElementById('tab-login').classList.contains('on');
+  if (tab) entrar(); else cadastrar();
+});
+
+// se já logado, redireciona
+(async () => {
+  const u = await getUser();
+  if (u) {
+    const p = await getPerfil(u.id);
+    window.location.href = p?.papel === 'instrutor' ? 'instrutor.html' : 'perfil.html';
+  }
+})();
+</script>
+</body>
+</html>

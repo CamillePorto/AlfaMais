@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALFA+ — Lição: Letras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --purple: #6B2FA0; --purple-dark: #3a1870;
+    --yellow: #FFD600; --yellow-dark: #b8860b;
+    --text: #1a1228; --muted: #7a6e8a;
+    --surface: #f7f3ff; --border: rgba(107,47,160,.18);
+    --radius: 16px;
+  }
+  html { font-size: 18px; }
+  body { font-family: 'Roboto', sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; }
+
+  /* ── HEADER ─────────────────────────────────── */
+  header {
+    background: var(--purple); display: flex; align-items: center; justify-content: space-between;
+    padding: 0 1.5rem; height: 60px;
+  }
+  .header-back { color: rgba(255,255,255,.8); text-decoration: none; font-size: .88rem; display: flex; align-items: center; gap: .4rem; }
+  .header-back:hover { color: var(--yellow); }
+  .header-logo { font-family: 'Sora', sans-serif; font-size: 1.4rem; color: var(--yellow); }
+  .header-progress { display: flex; align-items: center; gap: .75rem; }
+  .prog-label { font-size: .78rem; color: rgba(255,255,255,.7); }
+  .prog-bar-wrap { width: 120px; height: 8px; background: rgba(255,255,255,.2); border-radius: 4px; overflow: hidden; }
+  .prog-bar { height: 100%; background: var(--yellow); border-radius: 4px; transition: width .4s; }
+
+  /* ── MAIN CARD ───────────────────────────────── */
+  .main { max-width: 600px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+
+  .lesson-header { margin-bottom: 1.5rem; }
+  .lesson-module { font-size: .78rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+  .lesson-title { font-family: 'Sora', sans-serif; font-size: 1.4rem; color: var(--purple-dark); }
+
+  .card-big {
+    background: #fff; border-radius: 24px; border: 1.5px solid var(--border);
+    overflow: hidden; margin-bottom: 1.5rem;
+    box-shadow: 0 4px 24px rgba(107,47,160,.08);
+    transition: transform .3s;
+  }
+  .card-big.flipped { transform: scale(0.97); }
+
+  .card-image {
+    background: var(--purple); height: 220px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8rem; transition: background .3s;
+    position: relative;
+  }
+  .card-image-label {
+    position: absolute; bottom: 10px; right: 12px;
+    background: rgba(255,255,255,.15); color: rgba(255,255,255,.9);
+    font-size: .7rem; border-radius: 10px; padding: 2px 10px; backdrop-filter: blur(4px);
+  }
+
+  .card-body { padding: 1.75rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .card-letter-wrap { text-align: center; }
+  .card-letter-big { font-family: 'Sora', sans-serif; font-size: 5rem; color: var(--purple); line-height: 1; }
+  .card-letter-case { font-size: .78rem; color: var(--muted); margin-top: .25rem; }
+  .card-word-wrap { flex: 1; }
+  .card-word { font-family: 'Sora', sans-serif; font-size: 2rem; color: var(--purple-dark); margin-bottom: .25rem; }
+  .card-syllables { display: flex; gap: .4rem; flex-wrap: wrap; }
+  .syl {
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 3px 12px; font-size: .88rem;
+    color: var(--purple); font-weight: 500; cursor: pointer; transition: all .2s;
+  }
+  .syl:hover, .syl.active { background: var(--purple); color: var(--yellow); border-color: var(--purple); }
+  .syl.stressed { border-color: var(--yellow); }
+
+  /* ── BOTÃO ÁUDIO ─────────────────────────────── */
+  .audio-section { display: flex; gap: .75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .btn-audio {
+    flex: 1; min-width: 140px; background: var(--purple); color: var(--yellow);
+    border: none; border-radius: 30px; padding: 14px 24px; font-size: .95rem; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .6rem;
+    transition: all .2s; font-family: 'Roboto', sans-serif;
+  }
+  .btn-audio:hover { background: #5a258f; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(107,47,160,.3); }
+  .btn-audio:active { transform: scale(0.97); }
+  .btn-audio.playing { background: #22c55e; color: #fff; }
+  .btn-audio-slow {
+    flex: 1; min-width: 140px; background: var(--surface); color: var(--purple-dark);
+    border: 1.5px solid var(--border); border-radius: 30px; padding: 13px 20px;
+    font-size: .9rem; font-weight: 500; cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: .5rem;
+    font-family: 'Roboto', sans-serif;
+  }
+  .btn-audio-slow:hover { border-color: var(--purple); background: #ede8ff; }
+
+  /* ── EXEMPLOS ────────────────────────────────── */
+  .examples-title { font-size: .88rem; color: var(--muted); font-weight: 500; margin-bottom: .75rem; text-transform: uppercase; letter-spacing: .5px; }
+  .examples-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .75rem; margin-bottom: 1.5rem; }
+  .example-pill {
+    background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: .75rem 1rem; cursor: pointer; transition: all .2s; text-align: center;
+    display: flex; align-items: center; gap: .75rem;
+  }
+  .example-pill:hover { border-color: var(--purple); background: var(--surface); }
+  .example-emoji { font-size: 1.6rem; }
+  .example-info {}
+  .example-word { font-size: .9rem; font-weight: 500; color: var(--purple-dark); }
+  .example-phonetic { font-size: .72rem; color: var(--muted); }
+
+  /* ── NAVEGAÇÃO ───────────────────────────────── */
+  .nav-btns { display: flex; gap: 1rem; align-items: center; }
+  .btn-prev {
+    background: #fff; color: var(--purple-dark); border: 1.5px solid var(--border);
+    border-radius: 30px; padding: 13px 24px; font-size: .9rem; font-weight: 500;
+    cursor: pointer; transition: all .2s; font-family: 'Roboto', sans-serif;
+  }
+  .btn-prev:hover { border-color: var(--purple); }
+  .btn-next {
+    flex: 1; background: var(--yellow); color: var(--purple-dark);
+    border: none; border-radius: 30px; padding: 15px; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: all .2s; font-family: 'Roboto', sans-serif;
+  }
+  .btn-next:hover { background: #ffe640; transform: translateY(-2px); }
+
+  /* ── DOTS ────────────────────────────────────── */
+  .dots { display: flex; justify-content: center; gap: .5rem; margin-bottom: 1.5rem; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); transition: all .3s; cursor: pointer; }
+  .dot.active { background: var(--purple); transform: scale(1.25); }
+  .dot.done { background: #22c55e; }
+
+  /* ── CONFETTI ────────────────────────────────── */
+  @keyframes confettifall {
+    from { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    to { transform: translateY(80px) rotate(360deg); opacity: 0; }
+  }
+  .confetti-piece {
+    position: fixed; width: 10px; height: 10px; border-radius: 2px;
+    animation: confettifall .8s ease-out forwards;
+    pointer-events: none; z-index: 999;
+  }
+
+  /* ── FIXED BOTTOM BAR ────────────────────────── */
+  .bottom-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff; border-top: 1.5px solid var(--border);
+    padding: 1rem 1.5rem; display: flex; gap: 1rem; justify-content: center;
+    box-shadow: 0 -4px 16px rgba(0,0,0,.06);
+  }
+  .bottom-bar .btn-prev { min-width: 120px; }
+  .bottom-bar .btn-next { min-width: 200px; }
+
+  @media (max-width: 480px) {
+    .card-body { flex-direction: column; align-items: flex-start; }
+    .card-letter-big { font-size: 4rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="header-back" href="index.html">← Voltar</a>
+  <div class="header-logo">ALFA+</div>
+  <div class="header-progress">
+    <span class="prog-label" id="prog-label">1 / 8</span>
+    <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar" style="width:12.5%;"></div></div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="lesson-header">
+    <div class="lesson-module">Módulo 1 · Letras e Sons</div>
+    <div class="lesson-title" id="lesson-title">Letra A — Abelha</div>
+  </div>
+
+  <div class="dots" id="dots"></div>
+
+  <div class="card-big" id="main-card">
+    <div class="card-image" id="card-image" style="font-size:8rem;">
+      <span id="card-emoji">🐝</span>
+      <div class="card-image-label">Toque 🔊 para ouvir</div>
+    </div>
+    <div class="card-body">
+      <div class="card-letter-wrap">
+        <div class="card-letter-big" id="card-letter">A</div>
+        <div class="card-letter-case" id="card-letter-case">A · a</div>
+      </div>
+      <div class="card-word-wrap">
+        <div class="card-word" id="card-word">Abelha</div>
+        <div class="card-syllables" id="card-syllables">
+          <!-- preenchido via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="audio-section">
+    <button class="btn-audio" id="btn-audio-main" onclick="speakWord(false)">
+      🔊 Ouvir a palavra
+    </button>
+    <button class="btn-audio-slow" onclick="speakWord(true)">
+      🐢 Ouvir devagar
+    </button>
+  </div>
+
+  <div class="examples-title">Outras palavras com esta letra</div>
+  <div class="examples-grid" id="examples-grid"></div>
+</main>
+
+<div class="bottom-bar">
+  <button class="btn-prev" id="btn-prev" onclick="navigate(-1)">← Anterior</button>
+  <button class="btn-next" id="btn-next" onclick="navigate(1)">Próxima letra →</button>
+</div>
+
+<script>
+const letras = [
+  { letter:'A', word:'Abelha', emoji:'🐝', syllables:['A','be','lha'], examples:[{e:'🍎',w:'Amor',p:'A-mor'},{e:'🕊️',w:'Ave',p:'A-ve'},{e:'🌳',w:'Árvore',p:'Ár-vo-re'}] },
+  { letter:'B', word:'Bola', emoji:'⚽', syllables:['Bo','la'], examples:[{e:'🎈',w:'Balão',p:'Ba-lão'},{e:'🍌',w:'Banana',p:'Ba-na-na'},{e:'💃',w:'Baile',p:'Bai-le'}] },
+  { letter:'C', word:'Casa', emoji:'🏠', syllables:['Ca','sa'], examples:[{e:'🐴',w:'Cavalo',p:'Ca-va-lo'},{e:'☕',w:'Café',p:'Ca-fé'},{e:'🎵',w:'Canção',p:'Can-ção'}] },
+  { letter:'D', word:'Dado', emoji:'🎲', syllables:['Da','do'], examples:[{e:'💃',w:'Dança',p:'Dan-ça'},{e:'🦷',w:'Dente',p:'Den-te'},{e:'💰',w:'Dinheiro',p:'Di-nhei-ro'}] },
+  { letter:'E', word:'Estrela', emoji:'⭐', syllables:['Es','tre','la'], examples:[{e:'🐘',w:'Elefante',p:'E-le-fan-te'},{e:'📚',w:'Escola',p:'Es-co-la'},{e:'🪞',w:'Espelho',p:'Es-pe-lho'}] },
+  { letter:'F', word:'Flor', emoji:'🌸', syllables:['Flor'], examples:[{e:'🔥',w:'Fogo',p:'Fo-go'},{e:'🧀',w:'Fromagem',p:'Fro-ma-gem'},{e:'🍓',w:'Fruta',p:'Fru-ta'}] },
+  { letter:'G', word:'Gato', emoji:'🐱', syllables:['Ga','to'], examples:[{e:'🐔',w:'Galinha',p:'Ga-li-nha'},{e:'⚽',w:'Gol',p:'Gol'},{e:'🍇',w:'Goiaba',p:'Goi-a-ba'}] },
+  { letter:'H', word:'Hora', emoji:'⏰', syllables:['Ho','ra'], examples:[{e:'🌿',w:'Horta',p:'Hor-ta'},{e:'👨',w:'Homem',p:'Ho-mem'},{e:'🏥',w:'Hospital',p:'Hos-pi-tal'}] },
+];
+
+let current = 0;
+let done = [];
+
+function renderDots() {
+  const d = document.getElementById('dots');
+  d.innerHTML = '';
+  letras.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === current ? ' active' : '') + (done.includes(i) && i !== current ? ' done' : '');
+    dot.onclick = () => goTo(i);
+    d.appendChild(dot);
+  });
+}
+
+function renderCard() {
+  const l = letras[current];
+  document.getElementById('lesson-title').textContent = `Letra ${l.letter} — ${l.word}`;
+  document.getElementById('card-emoji').textContent = l.emoji;
+  document.getElementById('card-letter').textContent = l.letter;
+  document.getElementById('card-letter-case').textContent = `${l.letter} · ${l.letter.toLowerCase()}`;
+  document.getElementById('card-word').textContent = l.word;
+
+  const sylDiv = document.getElementById('card-syllables');
+  sylDiv.innerHTML = '';
+  l.syllables.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'syl' + (i === 0 ? ' stressed' : '');
+    btn.textContent = s;
+    btn.onclick = () => { btn.classList.add('active'); speakSyllable(s); setTimeout(() => btn.classList.remove('active'), 400); };
+    sylDiv.appendChild(btn);
+  });
+
+  const ex = document.getElementById('examples-grid');
+  ex.innerHTML = '';
+  l.examples.forEach(e => {
+    const pill = document.createElement('div');
+    pill.className = 'example-pill';
+    pill.innerHTML = `<div class="example-emoji">${e.e}</div><div class="example-info"><div class="example-word">${e.w}</div><div class="example-phonetic">${e.p}</div></div>`;
+    pill.onclick = () => speakText(e.w, false);
+    ex.appendChild(pill);
+  });
+
+  const total = letras.length;
+  document.getElementById('prog-label').textContent = `${current + 1} / ${total}`;
+  document.getElementById('prog-bar').style.width = ((current + 1) / total * 100) + '%';
+
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-prev').style.opacity = current === 0 ? '.4' : '1';
+  document.getElementById('btn-next').textContent = current === letras.length - 1 ? '✓ Concluir módulo' : 'Próxima letra →';
+
+  renderDots();
+  const card = document.getElementById('main-card');
+  card.classList.add('flipped');
+  setTimeout(() => card.classList.remove('flipped'), 300);
+}
+
+function navigate(dir) {
+  if (navigator.vibrate) navigator.vibrate(60);
+  done.push(current);
+  if (dir === 1 && current === letras.length - 1) {
+    launchConfetti();
+    setTimeout(() => { window.location.href = 'index.html'; }, 1800);
+    return;
+  }
+  current = Math.max(0, Math.min(letras.length - 1, current + dir));
+  renderCard();
+  speakWord(false);
+}
+
+function goTo(i) {
+  current = i; renderCard();
+}
+
+function speakText(text, slow) {
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'pt-BR'; u.rate = slow ? 0.5 : 0.85;
+    const btn = document.getElementById('btn-audio-main');
+    btn.classList.add('playing');
+    u.onend = () => btn.classList.remove('playing');
+    speechSynthesis.speak(u);
+  }
+}
+
+function speakWord(slow) { speakText(letras[current].word, slow); }
+function speakSyllable(s) { speakText(s, true); }
+
+function launchConfetti() {
+  const colors = ['#6B2FA0','#FFD600','#22c55e','#f43f5e','#3b82f6'];
+  for (let i = 0; i < 30; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.cssText = `left:${Math.random()*100}vw;top:${Math.random()*30}vh;background:${colors[i%colors.length]};animation-delay:${Math.random()*0.5}s;`;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 1500);
+  }
+}
+
+renderCard();
+setTimeout(() => speakWord(false), 600);
+
+document.querySelectorAll('button').forEach(el => {
+  el.addEventListener('click', () => { if (navigator.vibrate) navigator.vibrate(60); });
+});
+</script>
+</body>
+</html>

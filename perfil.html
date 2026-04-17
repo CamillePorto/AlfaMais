@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALFA+ — Meu Perfil</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --p:#6B2FA0;--pd:#3a1870;--pl:#f0e8ff;
+  --y:#FFD600;--yd:#b8860b;
+  --tx:#1a1228;--mu:#7a6e8a;
+  --sf:#f7f3ff;--bd:rgba(107,47,160,.18);
+  --green:#22c55e;--r:14px;--fs:18px;
+}
+html{font-size:var(--fs)}
+body{font-family:'Nunito',sans-serif;background:var(--sf);color:var(--tx);min-height:100vh}
+
+/* ── ZOOM BAR ── */
+.zoom-bar{
+  background:#1a0e35;display:flex;align-items:center;
+  justify-content:flex-end;gap:.5rem;padding:.35rem 1.25rem;
+  position:sticky;top:0;z-index:200;
+}
+.zoom-bar span{color:#888;font-size:.68rem}
+.z-btn{
+  background:transparent;border:1px solid #444;color:#bbb;
+  font-size:.72rem;padding:2px 10px;border-radius:20px;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;
+}
+.z-btn:hover{border-color:var(--y);color:var(--y)}
+.z-btn.active{background:var(--p);border-color:var(--p);color:var(--y)}
+
+/* ── TOP NAV ── */
+.topnav{
+  background:var(--p);display:flex;align-items:center;
+  justify-content:space-between;padding:0 1.5rem;height:60px;
+}
+.nav-logo{font-family:'Sora',sans-serif;font-size:1.5rem;color:var(--y)}
+.nav-links{display:flex;gap:1rem;align-items:center}
+.nav-links a{color:rgba(255,255,255,.8);text-decoration:none;font-size:.85rem;transition:color .2s}
+.nav-links a:hover{color:var(--y)}
+.nav-links a.active{color:var(--y);font-weight:700}
+.btn-sair{
+  background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.2);
+  border-radius:20px;padding:5px 14px;font-size:.78rem;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;
+}
+.btn-sair:hover{background:rgba(255,255,255,.2)}
+
+/* ── MAIN ── */
+.main{max-width:860px;margin:0 auto;padding:2rem 1.25rem 4rem}
+
+/* ── HERO PERFIL ── */
+.perfil-hero{
+  background:var(--p);border-radius:20px;padding:2rem 2rem 0;
+  margin-bottom:1.5rem;position:relative;overflow:hidden;
+}
+.perfil-hero::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.05);
+}
+.hero-top{display:flex;align-items:flex-end;gap:1.5rem;position:relative;z-index:1}
+.avatar{
+  width:80px;height:80px;border-radius:50%;
+  background:var(--yd);border:3px solid rgba(255,255,255,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.2rem;flex-shrink:0;cursor:pointer;position:relative;
+  transition:transform .2s;
+}
+.avatar:hover{transform:scale(1.05)}
+.avatar-edit{
+  position:absolute;bottom:0;right:0;width:22px;height:22px;
+  background:var(--y);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;
+}
+.hero-info{padding-bottom:1.25rem;flex:1}
+.hero-nome{font-family:'Sora',sans-serif;font-size:1.8rem;color:var(--y);line-height:1}
+.hero-cidade{color:rgba(255,255,255,.7);font-size:.85rem;margin:.25rem 0}
+.hero-turma{
+  display:inline-block;background:rgba(255,255,255,.15);color:#fff;
+  font-size:.72rem;border-radius:10px;padding:2px 10px;font-weight:700;margin-top:.25rem;
+}
+.hero-tabs{
+  display:flex;gap:0;border-top:1px solid rgba(255,255,255,.15);margin-top:1.25rem;
+}
+.hero-tab{
+  flex:1;background:transparent;border:none;padding:12px;
+  font-size:.82rem;font-weight:700;cursor:pointer;color:rgba(255,255,255,.6);
+  transition:all .2s;font-family:'Nunito',sans-serif;border-bottom:3px solid transparent;
+}
+.hero-tab.on{color:var(--y);border-bottom-color:var(--y)}
+.hero-tab:hover{color:#fff}
+
+/* ── CONTEÚDO DAS ABAS ── */
+.tab-content{display:none}
+.tab-content.on{display:block}
+
+/* ── CARDS GRID ── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
+.info-card{
+  background:#fff;border-radius:var(--r);border:1.5px solid var(--bd);padding:1.25rem;
+  transition:box-shadow .2s;
+}
+.info-card:hover{box-shadow:0 4px 16px rgba(107,47,160,.1)}
+.ic-label{font-size:.75rem;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.35rem}
+.ic-val{font-size:1.05rem;font-weight:700;color:var(--tx)}
+
+/* ── PROGRESSO ── */
+.prog-section{margin-bottom:1.5rem}
+.prog-title{font-family:'Sora',sans-serif;font-size:1.1rem;color:var(--pd);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+.prog-list{display:flex;flex-direction:column;gap:.65rem}
+.prog-item{
+  background:#fff;border:1.5px solid var(--bd);border-radius:var(--r);
+  padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;
+  cursor:pointer;transition:all .2s;text-decoration:none;color:inherit;
+}
+.prog-item:hover{border-color:var(--p);box-shadow:0 3px 12px rgba(107,47,160,.1)}
+.prog-emoji{font-size:1.5rem;flex-shrink:0}
+.prog-info{flex:1}
+.prog-name{font-size:.92rem;font-weight:700;color:var(--pd)}
+.prog-sub{font-size:.75rem;color:var(--mu);margin-top:1px}
+.prog-bar-wrap{height:7px;background:var(--bd);border-radius:4px;margin-top:.4rem;overflow:hidden}
+.prog-bar{height:100%;border-radius:4px;transition:width .6s}
+.prog-pct{font-size:.82rem;font-weight:800;flex-shrink:0;min-width:36px;text-align:right}
+.pct-0{color:var(--mu)} .pct-low{color:#f97316} .pct-mid{color:#eab308} .pct-high{color:var(--green)}
+
+/* ── EDITAR PERFIL ── */
+.edit-form{background:#fff;border-radius:var(--r);border:1.5px solid var(--bd);padding:1.5rem;margin-bottom:1.25rem}
+.edit-title{font-family:'Sora',sans-serif;font-size:1.1rem;color:var(--pd);margin-bottom:1.1rem}
+.field{margin-bottom:.9rem}
+.field label{display:block;font-size:.82rem;font-weight:700;color:var(--pd);margin-bottom:.3rem}
+.field input,.field select{
+  width:100%;padding:11px 13px;font-size:.9rem;font-family:'Nunito',sans-serif;
+  border:1.5px solid var(--bd);border-radius:var(--r);background:var(--sf);color:var(--tx);outline:none;transition:border-color .2s;
+}
+.field input:focus,.field select:focus{border-color:var(--p)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.btn-salvar{
+  background:var(--p);color:var(--y);font-family:'Nunito',sans-serif;
+  font-size:.9rem;font-weight:800;border:none;border-radius:30px;padding:11px 28px;
+  cursor:pointer;transition:all .2s;
+}
+.btn-salvar:hover{background:#5a258f;transform:translateY(-2px)}
+.saved-msg{font-size:.8rem;color:var(--green);margin-left:.75rem;opacity:0;transition:opacity .3s}
+
+/* ── ACESSIBILIDADE ── */
+.ac-card{background:#fff;border:1.5px solid var(--bd);border-radius:var(--r);padding:1.25rem;margin-bottom:.75rem}
+.ac-title{font-size:.9rem;font-weight:700;color:var(--pd);margin-bottom:.75rem}
+.ac-row{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--bd)}
+.ac-row:last-child{border-bottom:none}
+.ac-label{font-size:.85rem;color:var(--tx)}
+.toggle-sw{position:relative;display:inline-block;width:42px;height:24px;cursor:pointer}
+.toggle-sw input{opacity:0;width:0;height:0}
+.toggle-sw .slider{
+  position:absolute;inset:0;background:#ccc;border-radius:24px;transition:.3s;
+}
+.toggle-sw .slider::before{
+  content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;
+  background:#fff;border-radius:50%;transition:.3s;
+}
+.toggle-sw input:checked + .slider{background:var(--p)}
+.toggle-sw input:checked + .slider::before{transform:translateX(18px)}
+
+/* ── LOADING ── */
+.loading-overlay{
+  position:fixed;inset:0;background:rgba(58,24,112,.7);
+  display:flex;align-items:center;justify-content:center;z-index:300;
+}
+.loading-card{background:#fff;border-radius:20px;padding:2rem 3rem;text-align:center}
+.loading-spinner{width:40px;height:40px;border:4px solid var(--pl);border-top-color:var(--p);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-weight:700;color:var(--pd)}
+
+@media(max-width:600px){
+  .hero-top{flex-direction:column;align-items:flex-start}
+  .hero-nome{font-size:1.4rem}
+  .row2{grid-template-columns:1fr}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading">
+  <div class="loading-card">
+    <div class="loading-spinner"></div>
+    <div class="loading-txt">Carregando seu perfil...</div>
+  </div>
+</div>
+
+<!-- ZOOM BAR -->
+<div class="zoom-bar">
+  <span>Zoom:</span>
+  <button class="z-btn" data-z="16" onclick="setZoom(16)">A</button>
+  <button class="z-btn active" data-z="18" onclick="setZoom(18)">A+</button>
+  <button class="z-btn" data-z="21" onclick="setZoom(21)">A++</button>
+  <button class="z-btn" data-z="24" onclick="setZoom(24)">A+++</button>
+  <button class="z-btn" onclick="toggleContraste()" id="btn-c">🌗</button>
+  <button class="z-btn" onclick="lerPagina()">🔊 Ouvir</button>
+</div>
+
+<!-- NAV -->
+<nav class="topnav">
+  <div class="nav-logo">ALFA+</div>
+  <div class="nav-links">
+    <a href="dashboard.html">🏠 Início</a>
+    <a href="licao.html">📖 Lições</a>
+    <a href="jogo.html">🃏 Jogo</a>
+    <a href="perfil.html" class="active">👤 Perfil</a>
+  </div>
+  <button class="btn-sair" onclick="sair()">Sair</button>
+</nav>
+
+<main class="main">
+  <!-- HERO -->
+  <div class="perfil-hero">
+    <div class="hero-top">
+      <div class="avatar" id="avatar" onclick="falar('Clique para alterar sua foto de perfil.')">
+        <span id="avatar-emoji">👤</span>
+        <div class="avatar-edit">✏️</div>
+      </div>
+      <div class="hero-info">
+        <div class="hero-nome" id="hero-nome">Carregando...</div>
+        <div class="hero-cidade" id="hero-cidade">📍 —</div>
+        <span class="hero-turma" id="hero-turma">Turma —</span>
+      </div>
+    </div>
+    <div class="hero-tabs">
+      <button class="hero-tab on" onclick="abrirAba('prog')">📈 Evolução</button>
+      <button class="hero-tab" onclick="abrirAba('info')">📋 Informações</button>
+      <button class="hero-tab" onclick="abrirAba('editar')">✏️ Editar</button>
+      <button class="hero-tab" onclick="abrirAba('ac')">♿ Acessibilidade</button>
+    </div>
+  </div>
+
+  <!-- ABA: EVOLUÇÃO -->
+  <div class="tab-content on" id="aba-prog">
+    <div class="cards-grid" id="stats-cards">
+      <!-- preenchido via JS -->
+    </div>
+    <div class="prog-section">
+      <div class="prog-title">📚 Seus módulos</div>
+      <div class="prog-list" id="prog-list">
+        <!-- preenchido via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA: INFORMAÇÕES -->
+  <div class="tab-content" id="aba-info">
+    <div class="cards-grid" id="info-cards">
+      <!-- preenchido via JS -->
+    </div>
+  </div>
+
+  <!-- ABA: EDITAR -->
+  <div class="tab-content" id="aba-editar">
+    <div class="edit-form">
+      <div class="edit-title">✏️ Editar informações</div>
+      <div class="field">
+        <label>👤 Nome</label>
+        <input type="text" id="e-nome" placeholder="Seu nome completo">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>🎂 Idade</label>
+          <input type="number" id="e-idade" placeholder="Ex: 65">
+        </div>
+        <div class="field">
+          <label>📍 Cidade</label>
+          <input type="text" id="e-cidade" placeholder="Ex: Camaçari">
+        </div>
+      </div>
+      <div class="field">
+        <label>🏫 Turma</label>
+        <input type="text" id="e-turma" placeholder="Ex: Turma 03">
+      </div>
+      <div class="field">
+        <label>🙂 Emoji do avatar</label>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem" id="emoji-picker">
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;margin-top:.5rem">
+        <button class="btn-salvar" onclick="salvarPerfil()">💾 Salvar alterações</button>
+        <span class="saved-msg" id="saved-msg">✓ Salvo!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA: ACESSIBILIDADE -->
+  <div class="tab-content" id="aba-ac">
+    <div class="ac-card">
+      <div class="ac-title">🔊 Áudio e leitura</div>
+      <div class="ac-row">
+        <span class="ac-label">Narrar telas automaticamente</span>
+        <label class="toggle-sw"><input type="checkbox" id="ac-narrar" onchange="salvarAc()"><span class="slider"></span></label>
+      </div>
+      <div class="ac-row">
+        <span class="ac-label">Velocidade de fala devagar</span>
+        <label class="toggle-sw"><input type="checkbox" id="ac-devagar" onchange="salvarAc()"><span class="slider"></span></label>
+      </div>
+    </div>
+    <div class="ac-card">
+      <div class="ac-title">🎨 Visual</div>
+      <div class="ac-row">
+        <span class="ac-label">Alto contraste</span>
+        <label class="toggle-sw"><input type="checkbox" id="ac-contraste" onchange="aplicarAc()"><span class="slider"></span></label>
+      </div>
+      <div class="ac-row">
+        <span class="ac-label">Feedback vibratório ao clicar</span>
+        <label class="toggle-sw"><input type="checkbox" id="ac-vibrar" checked onchange="salvarAc()"><span class="slider"></span></label>
+      </div>
+    </div>
+    <div class="ac-card">
+      <div class="ac-title">🔍 Tamanho do texto</div>
+      <div style="display:flex;gap:.65rem;flex-wrap:wrap;margin-top:.25rem">
+        <button class="btn-salvar" style="padding:9px 20px;font-size:.82rem" onclick="setZoom(16)">Pequeno</button>
+        <button class="btn-salvar" style="padding:9px 20px;font-size:.82rem" onclick="setZoom(18)">Normal</button>
+        <button class="btn-salvar" style="padding:9px 20px;font-size:.82rem" onclick="setZoom(21)">Grande</button>
+        <button class="btn-salvar" style="padding:9px 20px;font-size:.82rem" onclick="setZoom(24)">Muito grande</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase.js"></script>
+<script>
+const EMOJIS = ['👤','👵','👴','🧓','👩','👨','🌟','🌻','🦁','🐦','🌈','🎓','📚','🏡','🌿'];
+let perfilAtual = {};
+let progressoAtual = [];
+
+// ─── inicializa ─────────────────────────────────────────────
+(async () => {
+  // zoom salvo
+  const z = localStorage.getItem('alfa_zoom');
+  if (z) setZoom(+z);
+
+  // acessibilidade salva
+  const ac = JSON.parse(localStorage.getItem('alfa_ac') || '{}');
+  if (ac.contraste) { document.body.style.filter='contrast(1.35)'; document.getElementById('ac-contraste').checked=true; }
+  if (ac.narrar) document.getElementById('ac-narrar').checked=true;
+  if (ac.devagar) document.getElementById('ac-devagar').checked=true;
+  if (ac.vibrar===false) document.getElementById('ac-vibrar').checked=false;
+
+  // demo mode
+  if (sessionStorage.getItem('alfa_demo')) {
+    carregarDemo();
+    return;
+  }
+
+  const u = await requireAuth();
+  const [p, prog] = await Promise.all([getPerfil(u.id), getProgresso(u.id)]);
+  perfilAtual = p || { nome: 'Aluno', cidade: '', turma: '', avatar_url: '👤', idade: '' };
+  progressoAtual = prog;
+  renderPerfil();
+  document.getElementById('loading').style.display = 'none';
+})();
+
+function carregarDemo() {
+  perfilAtual = { nome: 'Visitante', cidade: 'Demo', turma: 'Turma Demo', avatar_url: '🎓', idade: '' };
+  progressoAtual = [
+    { modulo: 'letras', licao: 'A', pct: 100, acertos: 5, total: 5 },
+    { modulo: 'letras', licao: 'B', pct: 60, acertos: 3, total: 5 },
+    { modulo: 'jogo', licao: 'facil', pct: 80, acertos: 8, total: 10 },
+  ];
+  renderPerfil();
+  document.getElementById('loading').style.display = 'none';
+}
+
+// ─── render ─────────────────────────────────────────────────
+function renderPerfil() {
+  const p = perfilAtual;
+  document.getElementById('hero-nome').textContent = p.nome || 'Aluno';
+  document.getElementById('hero-cidade').textContent = '📍 ' + (p.cidade || '—');
+  document.getElementById('hero-turma').textContent = p.turma || 'Turma —';
+  document.getElementById('avatar-emoji').textContent = p.avatar_url || '👤';
+  document.title = 'ALFA+ — ' + (p.nome || 'Perfil');
+
+  // emoji picker
+  const picker = document.getElementById('emoji-picker');
+  picker.innerHTML = '';
+  EMOJIS.forEach(e => {
+    const btn = document.createElement('button');
+    btn.textContent = e;
+    btn.style.cssText = 'font-size:1.5rem;background:none;border:2px solid transparent;border-radius:8px;cursor:pointer;padding:2px 4px;transition:all .2s';
+    if (e === p.avatar_url) btn.style.borderColor = 'var(--p)';
+    btn.onclick = () => {
+      document.querySelectorAll('#emoji-picker button').forEach(b => b.style.borderColor='transparent');
+      btn.style.borderColor = 'var(--p)';
+      document.getElementById('avatar-emoji').textContent = e;
+      perfilAtual.avatar_url = e;
+      vibrar(40);
+    };
+    picker.appendChild(btn);
+  });
+
+  // preenche campos de edição
+  document.getElementById('e-nome').value = p.nome || '';
+  document.getElementById('e-idade').value = p.idade || '';
+  document.getElementById('e-cidade').value = p.cidade || '';
+  document.getElementById('e-turma').value = p.turma || '';
+
+  renderStats();
+  renderProgresso();
+  renderInfoCards();
+
+  // narração automática
+  const ac = JSON.parse(localStorage.getItem('alfa_ac') || '{}');
+  if (ac.narrar) falar(`Bem-vindo ao seu perfil, ${p.nome}. Você tem ${progressoAtual.length} módulos em progresso.`);
+}
+
+const MODULOS_DEF = [
+  { key: 'letras',   label: 'Letras e sons',   emoji: '🔤', href: 'licao.html' },
+  { key: 'leitura',  label: 'Leitura e escrita', emoji: '📖', href: 'licao.html' },
+  { key: 'jogo',     label: 'Jogo de cartas',   emoji: '🃏', href: 'jogo.html' },
+  { key: 'info',     label: 'Informática básica', emoji: '💻', href: 'licao.html' },
+];
+
+function renderProgresso() {
+  const list = document.getElementById('prog-list');
+  list.innerHTML = '';
+  MODULOS_DEF.forEach(m => {
+    const rows = progressoAtual.filter(p => p.modulo === m.key);
+    const pct = rows.length ? Math.round(rows.reduce((a,r) => a + r.pct, 0) / rows.length) : 0;
+    const cor = pct >= 80 ? '#22c55e' : pct >= 50 ? '#eab308' : pct >= 20 ? '#f97316' : '#d1d5db';
+    const cls = pct >= 80 ? 'pct-high' : pct >= 50 ? 'pct-mid' : pct >= 20 ? 'pct-low' : 'pct-0';
+    const item = document.createElement('a');
+    item.className = 'prog-item';
+    item.href = m.href;
+    item.innerHTML = `
+      <div class="prog-emoji">${m.emoji}</div>
+      <div class="prog-info">
+        <div class="prog-name">${m.label}</div>
+        <div class="prog-sub">${rows.length} lição(ões) iniciada(s)</div>
+        <div class="prog-bar-wrap"><div class="prog-bar" style="width:${pct}%;background:${cor}"></div></div>
+      </div>
+      <div class="prog-pct ${cls}">${pct}%</div>`;
+    list.appendChild(item);
+  });
+}
+
+function renderStats() {
+  const total = progressoAtual.reduce((a, r) => a + r.acertos, 0);
+  const concluidas = progressoAtual.filter(r => r.pct === 100).length;
+  const mediaGeral = progressoAtual.length
+    ? Math.round(progressoAtual.reduce((a,r) => a + r.pct, 0) / progressoAtual.length)
+    : 0;
+  const cards = [
+    { label: 'Acertos totais', val: total, icon: '✅' },
+    { label: 'Lições concluídas', val: concluidas, icon: '🏆' },
+    { label: 'Aproveitamento geral', val: mediaGeral + '%', icon: '📊' },
+    { label: 'Dias de estudo', val: Math.min(progressoAtual.length, 7), icon: '📅' },
+  ];
+  const grid = document.getElementById('stats-cards');
+  grid.innerHTML = '';
+  cards.forEach(c => {
+    const d = document.createElement('div');
+    d.className = 'info-card';
+    d.innerHTML = `<div class="ic-label">${c.icon} ${c.label}</div><div class="ic-val" style="font-size:1.5rem;color:var(--p)">${c.val}</div>`;
+    grid.appendChild(d);
+  });
+}
+
+function renderInfoCards() {
+  const p = perfilAtual;
+  const items = [
+    { label: '👤 Nome', val: p.nome || '—' },
+    { label: '🎂 Idade', val: p.idade ? p.idade + ' anos' : '—' },
+    { label: '📍 Cidade', val: p.cidade || '—' },
+    { label: '🏫 Turma', val: p.turma || '—' },
+    { label: '🎓 Nível', val: 'Iniciante' },
+    { label: '📅 Membro desde', val: new Date().toLocaleDateString('pt-BR') },
+  ];
+  const grid = document.getElementById('info-cards');
+  grid.innerHTML = '';
+  items.forEach(i => {
+    const d = document.createElement('div');
+    d.className = 'info-card';
+    d.innerHTML = `<div class="ic-label">${i.label}</div><div class="ic-val">${i.val}</div>`;
+    grid.appendChild(d);
+  });
+}
+
+// ─── abas ────────────────────────────────────────────────────
+function abrirAba(nome) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.hero-tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('aba-' + nome).classList.add('on');
+  const idx = {'prog':0,'info':1,'editar':2,'ac':3}[nome];
+  document.querySelectorAll('.hero-tab')[idx].classList.add('on');
+  vibrar(40);
+}
+
+// ─── salvar perfil ────────────────────────────────────────────
+async function salvarPerfil() {
+  const novo = {
+    nome:   document.getElementById('e-nome').value.trim() || perfilAtual.nome,
+    idade:  +document.getElementById('e-idade').value || perfilAtual.idade,
+    cidade: document.getElementById('e-cidade').value.trim() || perfilAtual.cidade,
+    turma:  document.getElementById('e-turma').value.trim() || perfilAtual.turma,
+    avatar_url: perfilAtual.avatar_url,
+  };
+  Object.assign(perfilAtual, novo);
+
+  if (!sessionStorage.getItem('alfa_demo')) {
+    const u = await getUser();
+    if (u) await db.from('perfis').update(novo).eq('id', u.id);
+  }
+
+  renderPerfil();
+  const msg = document.getElementById('saved-msg');
+  msg.style.opacity = '1';
+  setTimeout(() => msg.style.opacity = '0', 2500);
+  falar('Perfil atualizado com sucesso!');
+  vibrar([60,20,60]);
+}
+
+// ─── acessibilidade ──────────────────────────────────────────
+function salvarAc() {
+  const ac = {
+    narrar:   document.getElementById('ac-narrar').checked,
+    devagar:  document.getElementById('ac-devagar').checked,
+    contraste:document.getElementById('ac-contraste').checked,
+    vibrar:   document.getElementById('ac-vibrar').checked,
+  };
+  localStorage.setItem('alfa_ac', JSON.stringify(ac));
+}
+function aplicarAc() {
+  const on = document.getElementById('ac-contraste').checked;
+  document.body.style.filter = on ? 'contrast(1.35)' : '';
+  salvarAc();
+}
+
+// ─── zoom ────────────────────────────────────────────────────
+function setZoom(n) {
+  document.documentElement.style.setProperty('--fs', n + 'px');
+  document.querySelectorAll('.z-btn[data-z]').forEach(b => b.classList.toggle('active', +b.dataset.z === n));
+  localStorage.setItem('alfa_zoom', n);
+}
+let hiC = false;
+function toggleContraste() {
+  hiC = !hiC;
+  document.body.style.filter = hiC ? 'contrast(1.35)' : '';
+  document.getElementById('btn-c').classList.toggle('active', hiC);
+}
+
+function lerPagina() {
+  const p = perfilAtual;
+  const ac = JSON.parse(localStorage.getItem('alfa_ac') || '{}');
+  falar(`Perfil de ${p.nome}. Cidade: ${p.cidade || 'não informada'}. ${p.turma || ''}. Você tem ${progressoAtual.length} lições no histórico.`, ac.devagar);
+}
+
+async function sair() {
+  if (!sessionStorage.getItem('alfa_demo')) await db.auth.signOut();
+  sessionStorage.clear();
+  window.location.href = 'login.html';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALFA+ — Alfabetização para Idosos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --purple: #6B2FA0;
+    --purple-dark: #3a1870;
+    --purple-light: #f0e8ff;
+    --yellow: #FFD600;
+    --yellow-dark: #b8860b;
+    --text: #1a1228;
+    --muted: #6b6480;
+    --bg: #fff;
+    --surface: #f7f3ff;
+    --border: rgba(107,47,160,0.15);
+    --radius: 14px;
+    --radius-lg: 20px;
+    --font-size-base: 18px;
+  }
+
+  html { font-size: var(--font-size-base); scroll-behavior: smooth; }
+  body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+  /* ── ACESSIBILIDADE ────────────────────────────── */
+  .a11y-bar {
+    background: var(--purple-dark);
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: .5rem; padding: .4rem 1.5rem;
+  }
+  .a11y-bar span { color: #aaa; font-size: .7rem; }
+  .a11y-btn {
+    background: transparent; border: 1px solid #555; color: #ccc;
+    font-size: .72rem; padding: 2px 10px; border-radius: 20px; cursor: pointer;
+    transition: all .2s;
+  }
+  .a11y-btn:hover { border-color: var(--yellow); color: var(--yellow); }
+
+  /* ── NAV ───────────────────────────────────────── */
+  nav {
+    background: var(--purple);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 66px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,.25);
+  }
+  .nav-logo { font-family: 'Sora', sans-serif; font-size: 1.8rem; color: var(--yellow); letter-spacing: 1px; }
+  .nav-links { display: flex; gap: 1.5rem; }
+  .nav-links a { color: rgba(255,255,255,.85); text-decoration: none; font-size: .88rem; transition: color .2s; }
+  .nav-links a:hover { color: var(--yellow); }
+  .nav-cta {
+    background: var(--yellow); color: var(--purple-dark); font-weight: 700;
+    border: none; border-radius: 28px; padding: 9px 22px; font-size: .88rem;
+    cursor: pointer; transition: background .2s, transform .15s;
+  }
+  .nav-cta:hover { background: #ffe640; transform: scale(1.04); }
+
+  /* ── HERO ──────────────────────────────────────── */
+  .hero {
+    background: var(--purple);
+    display: grid; grid-template-columns: 1fr 1fr; align-items: center;
+    gap: 2rem; padding: 5rem 4rem 6rem; min-height: 500px;
+  }
+  .hero h1 { font-family: 'Sora', sans-serif; font-size: 5rem; color: var(--yellow); line-height: 1; margin-bottom: .4rem; }
+  .hero h2 { font-size: 1.25rem; font-weight: 400; color: rgba(255,255,255,.9); max-width: 440px; line-height: 1.5; margin-bottom: 2rem; }
+  .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--yellow); color: var(--purple-dark); font-weight: 700;
+    border: none; border-radius: 30px; padding: 15px 32px; font-size: 1rem;
+    cursor: pointer; transition: all .2s;
+  }
+  .btn-primary:hover { background: #ffe640; transform: translateY(-2px); }
+  .btn-outline {
+    background: transparent; color: var(--yellow); font-weight: 500;
+    border: 2px solid var(--yellow); border-radius: 30px; padding: 13px 28px;
+    font-size: 1rem; cursor: pointer; transition: all .2s;
+  }
+  .btn-outline:hover { background: rgba(255,214,0,.12); transform: translateY(-2px); }
+  .hero-visual { display: flex; justify-content: center; }
+  .hero-circle {
+    width: 280px; height: 280px; border-radius: 50%;
+    background: var(--yellow-dark); display: flex; align-items: center; justify-content: center;
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+  /* ── STATS ─────────────────────────────────────── */
+  .stats-bar {
+    background: var(--yellow); display: flex; justify-content: center;
+    gap: 3rem; padding: 1.5rem 2rem; flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-n { font-family: 'Sora', sans-serif; font-size: 1.8rem; color: var(--purple-dark); }
+  .stat-l { font-size: .78rem; color: #5a3e00; font-weight: 500; margin-top: -2px; }
+
+  /* ── SEÇÕES ────────────────────────────────────── */
+  .section { padding: 4rem 4rem; max-width: 960px; margin: 0 auto; }
+  .section-bg { background: var(--surface); }
+  .sec-title { font-family: 'Sora', sans-serif; font-size: 1.6rem; color: var(--purple); margin-bottom: .5rem; }
+  .sec-sub { color: var(--muted); font-size: .95rem; margin-bottom: 2rem; max-width: 560px; }
+
+  /* ── MÓDULOS ───────────────────────────────────── */
+  .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+  .mod-card {
+    background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 1.5rem; cursor: pointer; transition: all .2s; text-decoration: none; color: inherit;
+    display: block;
+  }
+  .mod-card:hover { border-color: var(--purple); transform: translateY(-4px); box-shadow: 0 8px 24px rgba(107,47,160,.15); }
+  .mod-icon { font-size: 2.2rem; margin-bottom: .75rem; }
+  .mod-title { font-size: 1rem; font-weight: 500; color: var(--purple-dark); margin-bottom: .35rem; }
+  .mod-desc { font-size: .83rem; color: var(--muted); line-height: 1.4; }
+
+  /* ── CARTAS ────────────────────────────────────── */
+  .cards-row { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1.5rem; }
+  .edu-card {
+    width: 130px; border-radius: var(--radius); overflow: hidden;
+    border: 1.5px solid var(--border); cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    text-decoration: none; color: inherit; display: block;
+  }
+  .edu-card:hover { transform: scale(1.06) rotate(-1deg); box-shadow: 0 10px 28px rgba(107,47,160,.2); }
+  .card-top { background: var(--purple); height: 90px; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+  .card-bottom { background: #fff; padding: .6rem; text-align: center; }
+  .card-letter { font-family: 'Sora', sans-serif; font-size: 1.8rem; color: var(--purple); }
+  .card-word { font-size: .8rem; color: #555; }
+  .card-level { display: inline-block; margin-top: 4px; font-size: .68rem; background: var(--yellow); color: #5a3e00; border-radius: 8px; padding: 1px 8px; font-weight: 700; }
+
+  /* ── FEATURES ──────────────────────────────────── */
+  .feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .feat {
+    background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.25rem; transition: box-shadow .2s;
+  }
+  .feat:hover { box-shadow: 0 4px 16px rgba(107,47,160,.1); }
+  .feat-dot { width: 36px; height: 36px; border-radius: 50%; background: var(--purple); display: flex; align-items: center; justify-content: center; margin-bottom: .75rem; font-size: 1.1rem; }
+  .feat-t { font-size: .93rem; font-weight: 500; color: var(--purple-dark); margin-bottom: .3rem; }
+  .feat-d { font-size: .8rem; color: var(--muted); line-height: 1.4; }
+
+  /* ── TELAS ─────────────────────────────────────── */
+  .screens-row { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: .5rem; }
+  .phone {
+    background: #1a1228; border-radius: 22px; padding: 6px; min-width: 155px;
+    flex-shrink: 0; box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  }
+  .phone-inner { background: #fff; border-radius: 17px; overflow: hidden; }
+  .phone-nav { background: var(--purple); padding: 8px 10px; }
+  .phone-nav-title { color: var(--yellow); font-size: .7rem; font-weight: 700; }
+  .phone-body { padding: 8px; }
+  .phone-item { background: var(--surface); border-radius: 7px; padding: 6px 8px; margin-bottom: 5px; font-size: .68rem; color: var(--purple-dark); }
+  .progress-bar { height: 4px; border-radius: 2px; margin-top: 3px; }
+  .phone-tabs { display: flex; background: var(--purple-dark); padding: 4px; gap: 2px; }
+  .phone-tab { flex: 1; text-align: center; font-size: .55rem; color: rgba(255,255,255,.6); padding: 3px 0; }
+  .phone-tab.active { color: var(--yellow); border-bottom: 1px solid var(--yellow); }
+
+  /* ── CTA ───────────────────────────────────────── */
+  .cta-section {
+    background: var(--purple); text-align: center;
+    padding: 4rem 2rem;
+  }
+  .cta-section h2 { font-family: 'Sora', sans-serif; font-size: 1.8rem; color: var(--yellow); margin-bottom: .75rem; }
+  .cta-section p { color: rgba(255,255,255,.8); font-size: .95rem; margin-bottom: 2rem; }
+
+  /* ── FOOTER ────────────────────────────────────── */
+  footer { background: var(--purple-dark); padding: 2.5rem 4rem; display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between; align-items: center; }
+  .foot-logo { font-family: 'Sora', sans-serif; font-size: 1.6rem; color: var(--yellow); }
+  .foot-team { font-size: .78rem; color: #aaa; line-height: 2; }
+  .foot-links { display: flex; gap: 1rem; }
+  .foot-links a { color: rgba(255,255,255,.6); text-decoration: none; font-size: .8rem; }
+  .foot-links a:hover { color: var(--yellow); }
+
+  /* ── FAB AUDIO ─────────────────────────────────── */
+  .fab-audio {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    width: 54px; height: 54px; background: var(--purple); border-radius: 50%;
+    border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(107,47,160,.5); z-index: 200;
+    transition: transform .2s, background .2s;
+  }
+  .fab-audio:hover { background: #5a258f; transform: scale(1.1); }
+
+  /* ── RESPONSIVE ────────────────────────────────── */
+  @media (max-width: 720px) {
+    .hero { grid-template-columns: 1fr; padding: 3rem 1.5rem 4rem; text-align: center; }
+    .hero h1 { font-size: 3.5rem; }
+    .hero-btns { justify-content: center; }
+    .hero-visual { display: none; }
+    .section { padding: 2.5rem 1.5rem; }
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+    footer { padding: 2rem 1.5rem; flex-direction: column; align-items: flex-start; }
+    .stats-bar { gap: 1.5rem; }
+  }
+
+  /* ── ALTO CONTRASTE ────────────────────────────── */
+  body.hi-contrast {
+    --purple: #4a00b4;
+    --yellow: #ffe000;
+    --text: #000;
+    --muted: #333;
+    filter: contrast(1.25);
+  }
+</style>
+</head>
+<body>
+
+<!-- ACESSIBILIDADE -->
+<div class="a11y-bar">
+  <span>Acessibilidade:</span>
+  <button class="a11y-btn" onclick="changeFontSize(2)">A+</button>
+  <button class="a11y-btn" onclick="changeFontSize(-2)">A-</button>
+  <button class="a11y-btn" onclick="toggleContrast()">Alto contraste</button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">ALFA+</div>
+  <div class="nav-links">
+    <a href="#modulos">Módulos</a>
+    <a href="#cartas">Cartas</a>
+    <a href="#recursos">Recursos</a>
+    <a href="#telas">Como funciona</a>
+  </div>
+  <a href="login.html"><button class="nav-cta">Entrar na plataforma</button></a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <h1>ALFA+</h1>
+    <h2>Plataforma responsiva de alfabetização para adultos e idosos — aprender nunca foi tão acessível</h2>
+    <div class="hero-btns">
+      <a href="login.html"><button class="btn-primary">Quero aprender agora</button></a>
+      <a href="#modulos"><button class="btn-outline">Ver módulos</button></a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-circle">
+      <svg viewBox="0 0 200 200" width="190" height="190" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="52" r="30" fill="#ddd5a0" stroke="#a89050" stroke-width="1.5"/>
+        <rect x="60" y="86" width="80" height="58" rx="10" fill="#6899d4"/>
+        <rect x="68" y="102" width="64" height="38" rx="6" fill="#FFD600"/>
+        <circle cx="88" cy="46" r="4" fill="#2a1060"/>
+        <circle cx="112" cy="46" r="4" fill="#2a1060"/>
+        <path d="M87 62 Q100 72 113 62" stroke="#2a1060" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <text x="100" y="130" text-anchor="middle" font-size="20" fill="#6B2FA0">♥</text>
+        <line x1="32" y1="140" x2="58" y2="115" stroke="#ddd" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <circle cx="28" cy="145" r="10" fill="#FFD600"/>
+        <text x="28" y="149" text-anchor="middle" font-size="10" font-weight="bold" fill="#3a1870">A</text>
+        <line x1="168" y1="100" x2="148" y2="118" stroke="#ddd" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <circle cx="174" cy="95" r="10" fill="#6B2FA0"/>
+        <text x="174" y="99" text-anchor="middle" font-size="10" font-weight="bold" fill="#FFD600">B</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat"><div class="stat-n">4</div><div class="stat-l">Módulos de aprendizado</div></div>
+  <div class="stat"><div class="stat-n">26</div><div class="stat-l">Letras com imagem e áudio</div></div>
+  <div class="stat"><div class="stat-n">≤60dB</div><div class="stat-l">Áudio suave e agradável</div></div>
+  <div class="stat"><div class="stat-n">100%</div><div class="stat-l">Gratuito e acessível</div></div>
+</div>
+
+<!-- MÓDULOS -->
+<div id="modulos">
+  <div class="section">
+    <div class="sec-title">Módulos de aprendizagem</div>
+    <div class="sec-sub">Conteúdo progressivo, do básico ao avançado, com suporte de áudio em cada tela.</div>
+    <div class="modules-grid">
+      <a class="mod-card" href="licao.html">
+        <div class="mod-icon">🔤</div>
+        <div class="mod-title">Letras e sons</div>
+        <div class="mod-desc">Cada letra associada a uma imagem e palavra. Ex: A → Abelha</div>
+      </a>
+      <a class="mod-card" href="licao.html">
+        <div class="mod-icon">📖</div>
+        <div class="mod-title">Leitura e escrita</div>
+        <div class="mod-desc">Forme sílabas, palavras e frases simples do dia a dia.</div>
+      </a>
+      <a class="mod-card" href="jogo.html">
+        <div class="mod-icon">🃏</div>
+        <div class="mod-title">Jogo de cartas</div>
+        <div class="mod-desc">Associe cartas de letra com imagens e aprenda jogando.</div>
+      </a>
+      <a class="mod-card" href="licao.html">
+        <div class="mod-icon">💻</div>
+        <div class="mod-title">Informática básica</div>
+        <div class="mod-desc">WhatsApp, digitação, internet — tecnologia sem medo!</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- CARTAS -->
+<div id="cartas" class="section-bg">
+  <div class="section">
+    <div class="sec-title">Baralho educativo</div>
+    <div class="sec-sub">Cada carta tem uma letra, imagem e nível de dificuldade. Clique para jogar!</div>
+    <div class="cards-row" id="cardsRow"></div>
+    <div style="text-align:center;margin-top:2rem;">
+      <a href="jogo.html"><button class="btn-primary">Jogar com as cartas</button></a>
+    </div>
+  </div>
+</div>
+
+<!-- RECURSOS -->
+<div id="recursos">
+  <div class="section">
+    <div class="sec-title">Recursos de acessibilidade</div>
+    <div class="sec-sub">Desenvolvido especialmente para adultos e idosos, com cuidado em cada detalhe.</div>
+    <div class="feat-grid">
+      <div class="feat"><div class="feat-dot">🎙️</div><div class="feat-t">Botão de áudio em toda tela</div><div class="feat-d">Ouça o conteúdo narrado a qualquer momento, sem precisar ler.</div></div>
+      <div class="feat"><div class="feat-dot">🔤</div><div class="feat-t">Fonte Roboto 18px</div><div class="feat-d">Texto legível com opção de aumentar o tamanho.</div></div>
+      <div class="feat"><div class="feat-dot">🔆</div><div class="feat-t">Ícones grandes e claros</div><div class="feat-d">Interface com elementos visuais amplos, sem poluição visual.</div></div>
+      <div class="feat"><div class="feat-dot">📳</div><div class="feat-t">Feedback vibratório</div><div class="feat-d">60ms de vibração por clique com resposta imediata (&lt;100ms).</div></div>
+      <div class="feat"><div class="feat-dot">🎨</div><div class="feat-t">Alto contraste configurável</div><div class="feat-d">Paleta ajustável para diferentes necessidades visuais.</div></div>
+      <div class="feat"><div class="feat-dot">🎥</div><div class="feat-t">Encontro com instrutor</div><div class="feat-d">Videoaulas ao vivo com legendas automáticas e suporte humano.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TELAS -->
+<div id="telas" class="section-bg">
+  <div class="section">
+    <div class="sec-title">Veja como funciona</div>
+    <div class="sec-sub">Interface simples e adaptada ao público idoso.</div>
+    <div class="screens-row">
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="phone-nav"><div class="phone-nav-title">🏠 Página inicial</div></div>
+          <div class="phone-body">
+            <div style="font-size:.7rem;color:#6B2FA0;font-weight:700;margin-bottom:6px;">Oi Maria! Vamos continuar? 👋</div>
+            <div class="phone-item">📖 Leitura 01<div class="progress-bar" style="width:75%;background:#6B2FA0;"></div></div>
+            <div class="phone-item">💻 Digitação<div class="progress-bar" style="width:30%;background:#FFD600;"></div></div>
+            <div class="phone-item">🃏 Cartas<div class="progress-bar" style="width:10%;background:#ddd;"></div></div>
+          </div>
+          <div class="phone-tabs">
+            <div class="phone-tab active">🏠 Lições</div>
+            <div class="phone-tab">❤ Evolução</div>
+            <div class="phone-tab">⚙ Config</div>
+          </div>
+        </div>
+      </div>
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="phone-nav"><div class="phone-nav-title">🔤 Lição — Letra A</div></div>
+          <div class="phone-body" style="text-align:center;">
+            <div style="font-size:2rem;margin:4px 0;">🐝</div>
+            <div style="font-family:'Sora',sans-serif;font-size:2rem;color:#6B2FA0;font-weight:800;">A</div>
+            <div style="font-size:.78rem;font-weight:500;color:#3a1870;margin-bottom:6px;">Abelha</div>
+            <div style="background:#f0e8ff;border-radius:8px;padding:5px;font-size:.65rem;color:#555;">Aperte 🔊 para ouvir</div>
+          </div>
+          <div class="phone-tabs">
+            <div class="phone-tab">⬅</div>
+            <div class="phone-tab active">🔊</div>
+            <div class="phone-tab">➡</div>
+          </div>
+        </div>
+      </div>
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="phone-nav"><div class="phone-nav-title">👤 Perfil</div></div>
+          <div class="phone-body" style="text-align:center;">
+            <div style="width:36px;height:36px;border-radius:50%;background:#6B2FA0;margin:4px auto 4px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">👤</div>
+            <div style="font-size:.78rem;font-weight:700;color:#3a1870;">EDSON</div>
+            <div style="font-size:.65rem;color:#888;margin-bottom:6px;">Camaçari</div>
+            <div class="phone-item" style="font-size:.65rem;">👤 Informações pessoais</div>
+            <div class="phone-item" style="font-size:.65rem;">🔔 Notificações</div>
+            <div class="phone-item" style="font-size:.65rem;">♿ Acessibilidade</div>
+          </div>
+        </div>
+      </div>
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="phone-nav"><div class="phone-nav-title">❤ Evolução</div></div>
+          <div class="phone-body">
+            <div style="font-size:.6rem;color:#FFD600;background:#6B2FA0;padding:2px 6px;border-radius:6px;display:inline-block;margin-bottom:5px;">TURMA 03</div>
+            <div class="phone-item">Leitura 01<div class="progress-bar" style="width:80%;background:#6B2FA0;"></div><div style="font-size:.6rem;color:#6B2FA0;">80%</div></div>
+            <div class="phone-item">WhatsApp<div class="progress-bar" style="width:100%;background:#22c55e;"></div><div style="font-size:.6rem;color:#16a34a;">100% ✓</div></div>
+            <div class="phone-item">Digitação<div class="progress-bar" style="width:10%;background:#FFD600;"></div><div style="font-size:.6rem;color:#b8860b;">10%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Comece sua jornada hoje</h2>
+  <p>Aprender a ler e escrever transforma vidas. O ALFA+ está aqui para isso.</p>
+  <a href="login.html"><button class="btn-primary" style="font-size:1.1rem;padding:16px 40px;">Criar minha conta gratuitamente</button></a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="foot-logo">ALFA+</div>
+    <div style="font-size:.78rem;color:#aaa;margin-top:.25rem;">Plataforma responsiva de alfabetização de idosos</div>
+  </div>
+  <div class="foot-team">
+    Alan Ribeiro dos Santos · Camille Porto de Sousa<br>
+    Graciella Leal dos Santos · Marcos Gabriel Santos Sousa · Simone Lima dos Santos Reis
+  </div>
+  <div class="foot-links">
+    <a href="licao.html">Módulos</a>
+    <a href="jogo.html">Jogo</a>
+    <a href="login.html">Entrar</a>
+  </div>
+</footer>
+
+<!-- FAB AUDIO -->
+<button class="fab-audio" onclick="speakPage()" title="Ouvir página">
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FFD600" stroke-width="2.5">
+    <path d="M12 1a3 3 0 0 1 3 3v8a3 3 0 0 1-6 0V4a3 3 0 0 1 3-3z"/>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>
+    <line x1="8" y1="23" x2="16" y2="23"/>
+  </svg>
+</button>
+
+<script>
+const cards = [
+  {letter:'A',word:'Abelha',emoji:'🐝',level:'Fácil'},
+  {letter:'B',word:'Bola',emoji:'⚽',level:'Fácil'},
+  {letter:'C',word:'Casa',emoji:'🏠',level:'Fácil'},
+  {letter:'M',word:'Maçã',emoji:'🍎',level:'Médio'},
+  {letter:'P',word:'Pato',emoji:'🦆',level:'Médio'},
+  {letter:'S',word:'Sol',emoji:'☀️',level:'Fácil'},
+  {letter:'U',word:'Uva',emoji:'🍇',level:'Fácil'},
+  {letter:'V',word:'Vaca',emoji:'🐄',level:'Médio'},
+];
+const row = document.getElementById('cardsRow');
+cards.forEach(c => {
+  const el = document.createElement('a');
+  el.className = 'edu-card';
+  el.href = 'jogo.html';
+  el.innerHTML = `
+    <div class="card-top">${c.emoji}</div>
+    <div class="card-bottom">
+      <div class="card-letter">${c.letter}</div>
+      <div class="card-word">${c.word}</div>
+      <span class="card-level">${c.level}</span>
+    </div>`;
+  row.appendChild(el);
+});
+
+let fontSize = 18;
+function changeFontSize(d) {
+  fontSize = Math.min(24, Math.max(14, fontSize + d));
+  document.documentElement.style.setProperty('--font-size-base', fontSize + 'px');
+}
+
+function toggleContrast() {
+  document.body.classList.toggle('hi-contrast');
+}
+
+function speakPage() {
+  if ('speechSynthesis' in window) {
+    const txt = "Bem-vindo ao ALFA Mais. Plataforma de alfabetização para adultos e idosos. Clique em Quero aprender para começar.";
+    const u = new SpeechSynthesisUtterance(txt);
+    u.lang = 'pt-BR'; u.rate = 0.85;
+    speechSynthesis.speak(u);
+  }
+}
+
+document.querySelectorAll('button, a').forEach(el => {
+  el.addEventListener('click', () => {
+    if (navigator.vibrate) navigator.vibrate(60);
+  });
+});
+</script>
+</body>
+</html>

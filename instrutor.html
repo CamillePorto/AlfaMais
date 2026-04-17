@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALFA+ — Painel do Instrutor</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --p:#6B2FA0;--pd:#3a1870;--pl:#f0e8ff;
+  --y:#FFD600;--yd:#b8860b;
+  --tx:#1a1228;--mu:#7a6e8a;
+  --sf:#f7f3ff;--bd:rgba(107,47,160,.18);
+  --green:#22c55e;--r:14px;--fs:18px;
+}
+html{font-size:var(--fs)}
+body{font-family:'Nunito',sans-serif;background:var(--sf);color:var(--tx);min-height:100vh}
+
+/* ZOOM */
+.zoom-bar{background:#1a0e35;display:flex;align-items:center;justify-content:flex-end;gap:.5rem;padding:.35rem 1.25rem;position:sticky;top:0;z-index:200}
+.zoom-bar span{color:#888;font-size:.68rem}
+.z-btn{background:transparent;border:1px solid #444;color:#bbb;font-size:.72rem;padding:2px 10px;border-radius:20px;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif}
+.z-btn:hover{border-color:var(--y);color:var(--y)}
+.z-btn.active{background:var(--p);border-color:var(--p);color:var(--y)}
+
+/* NAV */
+.topnav{background:var(--p);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:60px}
+.nav-logo{font-family:'Sora',sans-serif;font-size:1.5rem;color:var(--y)}
+.nav-badge{background:var(--y);color:var(--pd);font-size:.7rem;font-weight:800;border-radius:8px;padding:2px 8px;margin-left:.4rem}
+.nav-right{display:flex;gap:.75rem;align-items:center}
+.nav-link{color:rgba(255,255,255,.8);text-decoration:none;font-size:.83rem;transition:color .2s}
+.nav-link:hover{color:var(--y)}
+.btn-sair{background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;font-size:.78rem;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s}
+.btn-sair:hover{background:rgba(255,255,255,.2)}
+
+/* MAIN */
+.main{max-width:960px;margin:0 auto;padding:2rem 1.25rem 4rem}
+
+/* HEADER INSTRUTOR */
+.inst-header{margin-bottom:1.75rem}
+.inst-title{font-family:'Sora',sans-serif;font-size:1.6rem;color:var(--pd)}
+.inst-sub{color:var(--mu);font-size:.88rem;margin-top:.25rem}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:#fff;border:1.5px solid var(--bd);border-radius:var(--r);padding:1.1rem 1.25rem}
+.stat-icon{font-size:1.4rem;margin-bottom:.4rem}
+.stat-val{font-family:'Sora',sans-serif;font-size:1.8rem;color:var(--p);line-height:1}
+.stat-label{font-size:.75rem;color:var(--mu);font-weight:700;margin-top:.2rem}
+
+/* BUSCA */
+.search-bar{
+  display:flex;align-items:center;gap:.75rem;background:#fff;
+  border:1.5px solid var(--bd);border-radius:30px;padding:.6rem 1rem;
+  margin-bottom:1.25rem;
+}
+.search-bar input{
+  flex:1;border:none;outline:none;font-size:.9rem;font-family:'Nunito',sans-serif;background:transparent;color:var(--tx);
+}
+.search-bar input::placeholder{color:#c0b8d0}
+.search-icon{font-size:1.1rem;flex-shrink:0;opacity:.5}
+.filter-btn{
+  background:var(--sf);border:1.5px solid var(--bd);border-radius:20px;
+  padding:5px 14px;font-size:.78rem;cursor:pointer;font-family:'Nunito',sans-serif;
+  color:var(--pd);font-weight:700;transition:all .2s;flex-shrink:0;
+}
+.filter-btn.on{background:var(--p);color:var(--y);border-color:var(--p)}
+
+/* TABELA DE ALUNOS */
+.table-wrap{background:#fff;border-radius:var(--r);border:1.5px solid var(--bd);overflow:hidden;margin-bottom:1.5rem}
+.table-header{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;
+  background:var(--sf);padding:.65rem 1rem;
+  font-size:.72rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;
+}
+.aluno-row{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;
+  padding:.9rem 1rem;border-top:1px solid var(--bd);
+  align-items:center;cursor:pointer;transition:background .15s;
+}
+.aluno-row:hover{background:var(--sf)}
+.aluno-nome-wrap{display:flex;align-items:center;gap:.65rem}
+.aluno-avatar{
+  width:34px;height:34px;border-radius:50%;background:var(--p);
+  display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;
+}
+.aluno-nome{font-size:.88rem;font-weight:700;color:var(--pd)}
+.aluno-cidade{font-size:.72rem;color:var(--mu)}
+.cell{font-size:.82rem;color:var(--tx)}
+.turma-badge{
+  display:inline-block;background:var(--pl);color:var(--p);
+  font-size:.68rem;font-weight:800;border-radius:8px;padding:2px 8px;
+}
+.pct-badge{
+  display:inline-block;border-radius:8px;padding:2px 10px;font-size:.75rem;font-weight:800;
+}
+.pct-high{background:#f0fdf4;color:#16a34a}
+.pct-mid{background:#fefce8;color:#854d0e}
+.pct-low{background:#fef2f2;color:#991b1b}
+.mini-bar{height:5px;background:var(--bd);border-radius:3px;overflow:hidden;margin-top:3px;width:70px}
+.mini-fill{height:100%;border-radius:3px}
+
+/* MODAL ALUNO */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(26,14,53,.65);
+  display:flex;align-items:center;justify-content:center;z-index:300;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.modal-overlay.on{opacity:1;pointer-events:all}
+.modal{
+  background:#fff;border-radius:20px;padding:2rem;width:90%;max-width:500px;
+  max-height:85vh;overflow-y:auto;
+  transform:translateY(20px);transition:transform .2s;
+}
+.modal-overlay.on .modal{transform:translateY(0)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.modal-title{font-family:'Sora',sans-serif;font-size:1.2rem;color:var(--pd)}
+.modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--mu);line-height:1}
+.modal-avatar{width:56px;height:56px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:.75rem}
+.modal-nome{font-family:'Sora',sans-serif;font-size:1.3rem;color:var(--pd)}
+.modal-info{font-size:.82rem;color:var(--mu);margin-bottom:1rem}
+.modal-prog-title{font-size:.8rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem}
+.modal-prog-item{display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--bd)}
+.modal-prog-item:last-child{border-bottom:none}
+.mp-emoji{font-size:1.2rem;flex-shrink:0}
+.mp-info{flex:1}
+.mp-name{font-size:.85rem;font-weight:700;color:var(--pd)}
+.mp-bar{height:6px;background:var(--bd);border-radius:3px;overflow:hidden;margin-top:3px}
+.mp-fill{height:100%;border-radius:3px}
+.mp-pct{font-size:.8rem;font-weight:800;min-width:32px;text-align:right}
+.btn-msg{
+  width:100%;background:var(--p);color:var(--y);font-family:'Nunito',sans-serif;
+  font-size:.9rem;font-weight:800;border:none;border-radius:30px;padding:11px;
+  cursor:pointer;margin-top:1rem;transition:all .2s;
+}
+.btn-msg:hover{background:#5a258f}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:rgba(58,24,112,.7);display:flex;align-items:center;justify-content:center;z-index:400}
+.loading-card{background:#fff;border-radius:20px;padding:2rem 3rem;text-align:center}
+.loading-spinner{width:40px;height:40px;border:4px solid var(--pl);border-top-color:var(--p);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-weight:700;color:var(--pd)}
+
+/* EMPTY */
+.empty{text-align:center;padding:2.5rem;color:var(--mu);font-size:.88rem}
+
+@media(max-width:620px){
+  .table-header{grid-template-columns:2fr 1fr 1fr}
+  .aluno-row{grid-template-columns:2fr 1fr 1fr}
+  .cell:nth-child(4),.cell:nth-child(5),.table-header>*:nth-child(4),.table-header>*:nth-child(5){display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="loading-card">
+    <div class="loading-spinner"></div>
+    <div class="loading-txt">Carregando painel...</div>
+  </div>
+</div>
+
+<div class="zoom-bar">
+  <span>Zoom:</span>
+  <button class="z-btn" data-z="16" onclick="setZoom(16)">A</button>
+  <button class="z-btn active" data-z="18" onclick="setZoom(18)">A+</button>
+  <button class="z-btn" data-z="21" onclick="setZoom(21)">A++</button>
+  <button class="z-btn" data-z="24" onclick="setZoom(24)">A+++</button>
+  <button class="z-btn" onclick="falar('Painel do instrutor ALFA Mais. Visualize o progresso de todos os seus alunos.')">🔊</button>
+</div>
+
+<nav class="topnav">
+  <div>
+    <span class="nav-logo">ALFA+</span>
+    <span class="nav-badge">INSTRUTOR</span>
+  </div>
+  <div class="nav-right">
+    <a class="nav-link" href="dashboard.html">🏠 Início</a>
+    <a class="nav-link" href="perfil.html">👤 Meu perfil</a>
+    <button class="btn-sair" onclick="sair()">Sair</button>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="inst-header">
+    <div class="inst-title" id="inst-title">Painel do Instrutor</div>
+    <div class="inst-sub">Acompanhe o progresso de todos os seus alunos em tempo real.</div>
+  </div>
+
+  <div class="stats-grid" id="stats-grid">
+    <!-- preenchido via JS -->
+  </div>
+
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="busca" placeholder="Buscar aluno pelo nome..." oninput="filtrar()">
+    <button class="filter-btn" id="f-todos" onclick="setFiltro('todos')">Todos</button>
+    <button class="filter-btn" id="f-risco" onclick="setFiltro('risco')">Em risco</button>
+    <button class="filter-btn" id="f-bem" onclick="setFiltro('bem')">Bem</button>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-header">
+      <div>Aluno</div>
+      <div>Turma</div>
+      <div>Lições</div>
+      <div>Aproveit.</div>
+      <div>Ação</div>
+    </div>
+    <div id="alunos-lista">
+      <div class="empty">Carregando alunos...</div>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL ALUNO -->
+<div class="modal-overlay" id="modal" onclick="fecharModal(event)">
+  <div class="modal" id="modal-inner">
+    <div class="modal-header">
+      <div class="modal-title">Detalhes do aluno</div>
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase.js"></script>
+<script>
+let alunosData = [];
+let progressoData = [];
+let filtroAtivo = 'todos';
+
+const MODS = [
+  { key:'letras',  label:'Letras',    emoji:'🔤' },
+  { key:'leitura', label:'Leitura',   emoji:'📖' },
+  { key:'jogo',    label:'Jogo',      emoji:'🃏' },
+  { key:'info',    label:'Informática',emoji:'💻' },
+];
+
+(async () => {
+  const z = localStorage.getItem('alfa_zoom');
+  if (z) setZoom(+z);
+
+  // demo mode para visualização sem banco real
+  if (sessionStorage.getItem('alfa_demo')) {
+    carregarDadosFicticios();
+    return;
+  }
+
+  try {
+    await requireInstrutor();
+    const u = await getUser();
+    const p = await getPerfil(u.id);
+    document.getElementById('inst-title').textContent = 'Painel — ' + (p?.nome || 'Instrutor');
+
+    const [{ data: perfis }, { data: prog }] = await Promise.all([
+      db.from('perfis').select('*').eq('papel', 'aluno'),
+      db.from('progresso').select('*'),
+    ]);
+
+    alunosData = perfis || [];
+    progressoData = prog || [];
+    renderTudo();
+  } catch (e) {
+    console.error(e);
+    carregarDadosFicticios();
+  }
+  document.getElementById('loading').style.display = 'none';
+})();
+
+function carregarDadosFicticios() {
+  alunosData = [
+    { id:'1', nome:'Maria das Graças', cidade:'Camaçari', turma:'Turma 01', avatar_url:'👵' },
+    { id:'2', nome:'José Ferreira',    cidade:'Salvador',  turma:'Turma 01', avatar_url:'👴' },
+    { id:'3', nome:'Ana Cristina',     cidade:'Lauro de Freitas', turma:'Turma 02', avatar_url:'👩' },
+    { id:'4', nome:'Pedro Alves',      cidade:'Camaçari', turma:'Turma 02', avatar_url:'👨' },
+    { id:'5', nome:'Francisca Lima',   cidade:'Salvador',  turma:'Turma 03', avatar_url:'🌻' },
+    { id:'6', nome:'Antônio Silva',    cidade:'Simões Filho', turma:'Turma 03', avatar_url:'🦁' },
+  ];
+  progressoData = [
+    { user_id:'1', modulo:'letras',  licao:'A', pct:100, acertos:5, total:5 },
+    { user_id:'1', modulo:'letras',  licao:'B', pct:80,  acertos:4, total:5 },
+    { user_id:'1', modulo:'jogo',    licao:'facil', pct:90, acertos:9, total:10 },
+    { user_id:'2', modulo:'letras',  licao:'A', pct:60,  acertos:3, total:5 },
+    { user_id:'3', modulo:'letras',  licao:'A', pct:100, acertos:5, total:5 },
+    { user_id:'3', modulo:'leitura', licao:'silabas', pct:70, acertos:7, total:10 },
+    { user_id:'3', modulo:'jogo',    licao:'facil', pct:60, acertos:6, total:10 },
+    { user_id:'4', modulo:'letras',  licao:'A', pct:20,  acertos:1, total:5 },
+    { user_id:'5', modulo:'letras',  licao:'A', pct:100, acertos:5, total:5 },
+    { user_id:'5', modulo:'letras',  licao:'B', pct:100, acertos:5, total:5 },
+    { user_id:'5', modulo:'info',    licao:'whatsapp', pct:80, acertos:8, total:10 },
+    { user_id:'6', modulo:'letras',  licao:'A', pct:40,  acertos:2, total:5 },
+  ];
+  renderTudo();
+  document.getElementById('loading').style.display = 'none';
+}
+
+function mediaAluno(id) {
+  const rows = progressoData.filter(p => p.user_id === id);
+  if (!rows.length) return 0;
+  return Math.round(rows.reduce((a,r) => a + r.pct, 0) / rows.length);
+}
+
+function renderTudo() {
+  renderStats();
+  renderLista();
+}
+
+function renderStats() {
+  const total = alunosData.length;
+  const ativos = alunosData.filter(a => progressoData.some(p => p.user_id === a.id)).length;
+  const medias = alunosData.map(a => mediaAluno(a.id));
+  const mediaGeral = medias.length ? Math.round(medias.reduce((a,b) => a+b,0)/medias.length) : 0;
+  const risco = medias.filter(m => m < 40).length;
+  const cards = [
+    { icon:'👥', val:total,      label:'Total de alunos' },
+    { icon:'✅', val:ativos,     label:'Alunos ativos' },
+    { icon:'📊', val:mediaGeral+'%', label:'Média geral' },
+    { icon:'⚠️', val:risco,      label:'Precisam de atenção' },
+  ];
+  const grid = document.getElementById('stats-grid');
+  grid.innerHTML = '';
+  cards.forEach(c => {
+    const d = document.createElement('div');
+    d.className = 'stat-card';
+    d.innerHTML = `<div class="stat-icon">${c.icon}</div><div class="stat-val">${c.val}</div><div class="stat-label">${c.label}</div>`;
+    grid.appendChild(d);
+  });
+}
+
+function renderLista() {
+  const busca = document.getElementById('busca').value.toLowerCase();
+  let lista = alunosData.filter(a => {
+    if (busca && !a.nome.toLowerCase().includes(busca)) return false;
+    const m = mediaAluno(a.id);
+    if (filtroAtivo === 'risco' && m >= 40) return false;
+    if (filtroAtivo === 'bem' && m < 60) return false;
+    return true;
+  });
+
+  const el = document.getElementById('alunos-lista');
+  if (!lista.length) { el.innerHTML='<div class="empty">Nenhum aluno encontrado.</div>'; return; }
+
+  el.innerHTML = '';
+  lista.forEach(a => {
+    const licoesFeitas = progressoData.filter(p => p.user_id === a.id).length;
+    const pct = mediaAluno(a.id);
+    const pcls = pct >= 70 ? 'pct-high' : pct >= 40 ? 'pct-mid' : 'pct-low';
+    const pcor = pct >= 70 ? '#22c55e' : pct >= 40 ? '#eab308' : '#ef4444';
+    const row = document.createElement('div');
+    row.className = 'aluno-row';
+    row.innerHTML = `
+      <div class="aluno-nome-wrap">
+        <div class="aluno-avatar">${a.avatar_url || '👤'}</div>
+        <div>
+          <div class="aluno-nome">${a.nome}</div>
+          <div class="aluno-cidade">${a.cidade || '—'}</div>
+        </div>
+      </div>
+      <div class="cell"><span class="turma-badge">${a.turma || '—'}</span></div>
+      <div class="cell">${licoesFeitas}</div>
+      <div class="cell">
+        <span class="pct-badge ${pcls}">${pct}%</span>
+        <div class="mini-bar"><div class="mini-fill" style="width:${pct}%;background:${pcor}"></div></div>
+      </div>
+      <div class="cell"><button style="background:var(--pl);border:none;border-radius:8px;padding:4px 10px;font-size:.72rem;color:var(--p);font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif" onclick="abrirModal('${a.id}')">Ver ↗</button></div>`;
+    el.appendChild(row);
+  });
+}
+
+function filtrar() { renderLista(); }
+function setFiltro(f) {
+  filtroAtivo = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('f-'+f).classList.add('on');
+  renderLista();
+}
+setFiltro('todos');
+
+function abrirModal(id) {
+  vibrar(40);
+  const a = alunosData.find(x => x.id === id);
+  if (!a) return;
+  const prog = progressoData.filter(p => p.user_id === id);
+  const pct = mediaAluno(id);
+
+  const progsHtml = MODS.map(m => {
+    const rows = prog.filter(p => p.modulo === m.key);
+    const mp = rows.length ? Math.round(rows.reduce((a,r)=>a+r.pct,0)/rows.length) : 0;
+    const cor = mp >= 70 ? '#22c55e' : mp >= 40 ? '#eab308' : '#e0e0e0';
+    return `<div class="modal-prog-item">
+      <div class="mp-emoji">${m.emoji}</div>
+      <div class="mp-info">
+        <div class="mp-name">${m.label}</div>
+        <div class="mp-bar"><div class="mp-fill" style="width:${mp}%;background:${cor}"></div></div>
+      </div>
+      <div class="mp-pct" style="color:${cor}">${mp}%</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-avatar">${a.avatar_url || '👤'}</div>
+    <div class="modal-nome">${a.nome}</div>
+    <div class="modal-info">📍 ${a.cidade || '—'} &nbsp;|&nbsp; 🏫 ${a.turma || '—'} &nbsp;|&nbsp; Média: <b>${pct}%</b></div>
+    <div class="modal-prog-title">Progresso por módulo</div>
+    ${progsHtml}
+    <button class="btn-msg" onclick="falar('Aluno ${a.nome}. Média de aproveitamento: ${pct} por cento. ${prog.length} lições realizadas.')">
+      🔊 Ouvir resumo deste aluno
+    </button>`;
+
+  document.getElementById('modal').classList.add('on');
+}
+
+function fecharModal(e) {
+  if (!e || e.target.id === 'modal') document.getElementById('modal').classList.remove('on');
+}
+
+function setZoom(n) {
+  document.documentElement.style.setProperty('--fs', n+'px');
+  document.querySelectorAll('.z-btn[data-z]').forEach(b => b.classList.toggle('active', +b.dataset.z===n));
+  localStorage.setItem('alfa_zoom', n);
+}
+const z0 = localStorage.getItem('alfa_zoom');
+if (z0) setZoom(+z0);
+
+async function sair() {
+  await db.auth.signOut();
+  sessionStorage.clear();
+  window.location.href = 'login.html';
+}
+</script>
+</body>
+</html>
