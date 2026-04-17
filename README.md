@@ -13,6 +13,8 @@ A plataforma combina atividades interativas com acompanhamento de desempenho, pr
 Experiência do usuário (UX) simplificada
 Acessibilidade (voz e feedback tátil)
 Coleta e análise de dados de aprendizado
+
+
 🎯 Problema que resolve
 
 **A alfabetização de adultos enfrenta desafios como:**
@@ -27,6 +29,8 @@ falta de acompanhamento individualizado
 - Registrar progresso por usuário
 - Permitir análise de desempenho por atividade
   
+
+
 **🧠 Funcionalidades principais**
    
      🔐 Autenticação de usuários
@@ -42,6 +46,8 @@ falta de acompanhamento individualizado
      📳 Feedback por vibração (mobile)
      
      🏗️ Arquitetura do projeto
+
+
 
 **Frontend:**
 
@@ -76,21 +82,24 @@ HTML, CSS, JavaScript
    
     └── README.md
  
+
+
+
 **⚙️ Como executar o projeto**
   1. Clone o repositório
-  git clone https://github.com/seu-usuario/alfa-mais.git
+  **git clone https://github.com/seu-usuario/alfa-mais.git**
   2. Configure o Supabase
 
 Acesse seu projeto no Supabase e copie:
 
-Project URL
-anon public key
+    **Project URL
+    anon public key**
 
 No arquivo supabase.js, substitua:
 
-   const SUPABASE_URL  = 'SUA_URL_AQUI';
+     const SUPABASE_URL  = 'SUA_URL_AQUI';
    
-   const SUPABASE_ANON = 'SUA_CHAVE_AQUI';
+     const SUPABASE_ANON = 'SUA_CHAVE_AQUI';
 
 3. Execute localmente
 
@@ -101,6 +110,8 @@ Abra o arquivo index.html no navegador
 **Opção recomendada:**
 
 Usar Live Server no VS Code
+
+
 🗄️ Modelo de dados
 
 **O projeto utiliza tabelas como:**
@@ -114,6 +125,8 @@ progresso → desempenho por módulo/lição
    total de questões
    percentual de desempenho
    
+
+
 **📊 Potencial para Data Science**
 
 **Este projeto permite evoluções como:**
@@ -123,11 +136,13 @@ Identificação de dificuldades por conteúdo
 Modelos de recomendação de atividades
 Dashboards de acompanhamento educacional
 
+
 **🚀 Diferenciais técnicos**
 Integração direta com backend (BaaS)
 Estrutura modular e escalável
 Foco em acessibilidade
 Coleta estruturada de dados educacionais
+
 
 **📌 Melhorias futuras**
 Dashboard analítico (Power BI / Python)
