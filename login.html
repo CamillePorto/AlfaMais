@@ -310,33 +310,46 @@ async function entrar() {
 
 // ─── cadastro ───────────────────────────────────────────────
 async function cadastrar() {
-  const nome   = document.getElementById('c-nome').value.trim();
-  const idade  = document.getElementById('c-idade').value;
+  const nome = document.getElementById('c-nome').value.trim();
+  const idade = document.getElementById('c-idade').value;
   const cidade = document.getElementById('c-cidade').value.trim();
-  const email  = document.getElementById('c-email').value.trim();
-  const senha  = document.getElementById('c-senha').value;
-  if (!nome || !email || !senha) { showMsg('msg-cad','Preencha nome, e-mail e senha.','err'); return; }
-  if (senha.length < 6) { showMsg('msg-cad','A senha precisa ter pelo menos 6 caracteres.','err'); return; }
+  const email = document.getElementById('c-email').value.trim();
+  const senha = document.getElementById('c-senha').value;
+
+  if (!nome || !email || !senha) {
+    showMsg('msg-cad', 'Preencha o nome, e-mail e senha.');
+    return;
+  }
+  
   setLoading('btn-cad', true);
+
   const { error } = await db.auth.signUp({
-    email, password: senha,
-    options: { data: { nome, papel: 'aluno' } }
+    email,
+    password: senha,
+    options: { 
+      data: { nome, papel: 'aluno' },
+      emailRedirectTo: window.location.origin // opcional: pode remover se não precisar
+    },
   });
+
   if (error) {
     showMsg('msg-cad', 'Erro ao criar conta: ' + error.message, 'err');
     setLoading('btn-cad', false);
     return;
   }
+
   // salva campos extras no perfil
   const { data: { user } } = await db.auth.getUser();
-  if (user) {
-    await db.from('perfis').update({ idade: +idade || null, cidade }).eq('id', user.id);
-  }
-  document.getElementById('f-cad').style.display = 'none';
-  document.getElementById('f-sucesso').style.display = 'block';
-  falar('Conta criada com sucesso! Verifique seu e-mail para confirmar.');
-}
 
+  if (user) {
+    await db.from('perfis').update({ idade: +idade || null, cidade: cidade }).eq('id', user.id);
+  }
+
+  setLoading('btn-cad', false);
+  document.getElementById('f-cad').style.display = 'none';
+  document.getElementById('f-success').style.display = 'block';
+  falar('Conta criada com sucesso!');
+}
 // ─── demo ───────────────────────────────────────────────────
 function entrarDemo() {
   sessionStorage.setItem('alfa_demo', '1');
